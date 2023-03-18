@@ -9,7 +9,7 @@ require 'conectar.php';
 $con=conectarDb();
 
 $data = json_decode(file_get_contents("php://input"));
-
+$tipoUser = $data-> tipoUser;
 $nombres= $data-> nombres;
 $apellidoP= $data-> apellidoP;
 $apellidoM= $data-> apellidoM;
@@ -25,8 +25,8 @@ if($nums > 0){
 }
 else{
     if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-        $sqlQuery =("INSERT INTO `usuario`(`nombres`,`apellidoP`, `apellidoM`, `correo`, `contraseña`)
-                VALUES ('".$nombres."','".$apellidoP."', '".$apellidoM."', '".$correo."', '".$contraseña."' )");
+        $sqlQuery =("INSERT INTO `usuario`(`tipoUser`,`nombres`,`apellidoP`, `apellidoM`, `correo`, `contraseña`)
+                VALUES ('".$tipoUser."','".$nombres."','".$apellidoP."', '".$apellidoM."', '".$correo."', '".$contraseña."' )");
      
             if ($con->query($sqlQuery) === TRUE) {
                 http_response_code(200);
