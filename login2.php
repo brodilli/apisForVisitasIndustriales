@@ -36,6 +36,7 @@ if($nums > 0){
     $outp .= '"nombres":"'   . $rs["nombres"]        . '",';
     $outp .= '"apellidoP":"'   . $rs["apellidoP"]        . '",';
     $outp .= '"apellidoM":"'   . $rs["apellidoM"]        . '",';
+    $outp .= '"tipoUser":"'   . $rs["tipoUser"]        . '",';
     $outp .= '"Status":"200"}';
 
     echo $outp;

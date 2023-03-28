@@ -3,12 +3,17 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 header("Content-Type: text/html; charset=utf-8");
 $method = $_SERVER['REQUEST_METHOD'];
+
+$data = json_decode(file_get_contents("php://input"));
+$id_usuario = $data->id_usuario;
+
 $sql= "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
 usuario.apellidoM, solicitud_visita.fecha, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
-solicitud_visita.semestre, solicitud_visita.num_alumnos, solicitud_visita.id_carrera, solicitud_visita.num_alumnas, carrera.nombre_carrera FROM solicitud_visita 
+solicitud_visita.semestre, solicitud_visita.num_alumnos, solicitud_visita.num_alumnas, carrera.nombre_carrera FROM solicitud_visita 
 INNER JOIN empresa on solicitud_visita.id_empresa = empresa.id_empresa 
 INNER JOIN usuario on solicitud_visita.id_usuario = usuario.id_usuario 
-INNER JOIN carrera on solicitud_visita.id_carrera = carrera.id_carrera;";
+INNER JOIN carrera on solicitud_visita.id_carrera = carrera.id_carrera
+WHERE solicitud_visita.id_usuario='$id_usuario';";
 include "conectar.php";
 //sleep(1);
 function desconectar($conexion){

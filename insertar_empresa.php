@@ -10,7 +10,7 @@ $con=conectarDb();
 
 $data = json_decode(file_get_contents("php://input"));
 
-$nombre= $data-> nombre;
+$nombre_empresa= $data-> nombre_empresa;
 $lugar= $data-> lugar;
 $nombre_contacto= $data-> nombre_contacto;
 $correo_contacto= $data-> correo_contacto;
@@ -25,8 +25,8 @@ $telefono_contacto= $data-> telefono_contacto;
 // }
 // else{
     if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-        $sqlQuery =("INSERT INTO `empresa`(`nombre`,`lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`)
-                VALUES ('".$nombre."','".$lugar."', '".$nombre_contacto."', '".$correo_contacto."', '".$telefono_contacto."' )");
+        $sqlQuery =("INSERT INTO `empresa`(`nombre_empresa`,`lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`)
+                VALUES ('".$nombre_empresa."','".$lugar."', '".$nombre_contacto."', '".$correo_contacto."', '".$telefono_contacto."' )");
      
             if ($con->query($sqlQuery) === TRUE) {
                 http_response_code(200);
