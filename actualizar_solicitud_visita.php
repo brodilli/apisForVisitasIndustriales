@@ -20,6 +20,7 @@ $fecha= $data-> fecha;
 $num_alumnos= $data-> num_alumnos;
 $num_alumnas= $data-> num_alumnas;
 $asignatura= $data-> asignatura;
+$estatus= $data-> estatus;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
@@ -32,7 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
         `fecha` = '$fecha', 
         `num_alumnos`   = '$num_alumnos',
         `num_alumnas`   = '$num_alumnas', 
-        `asignatura`   = '$asignatura'
+        `asignatura`   = '$asignatura',
+        `estatus`   = '$estatus'
         WHERE id_visita = $id_visita");
  
         if ($con->query($sqlQuery) === TRUE) {

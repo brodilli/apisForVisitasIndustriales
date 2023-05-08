@@ -4,7 +4,7 @@ header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Conte
 header("Content-Type: text/html; charset=utf-8");
 $method = $_SERVER['REQUEST_METHOD'];
 $sql= "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
-usuario.apellidoM, solicitud_visita.fecha, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
+usuario.apellidoM, solicitud_visita.fecha, solicitud_visita.estatus, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
 solicitud_visita.semestre, solicitud_visita.num_alumnos, solicitud_visita.id_carrera, solicitud_visita.num_alumnas, carrera.nombre_carrera FROM solicitud_visita 
 INNER JOIN empresa on solicitud_visita.id_empresa = empresa.id_empresa 
 INNER JOIN usuario on solicitud_visita.id_usuario = usuario.id_usuario 
