@@ -17,10 +17,13 @@ $semestre = $data-> semestre;
 $grupo = $data-> grupo;
 $objetivo= $data-> objetivo;
 $fecha= $data-> fecha;
+$horaSalida= $data-> horaSalida;
+$horaLlegada= $data-> horaLlegada;
 $num_alumnos= $data-> num_alumnos;
 $num_alumnas= $data-> num_alumnas;
 $asignatura= $data-> asignatura;
 $estatus= $data-> estatus;
+$comentarios= $data-> comentarios;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
@@ -31,10 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
         `grupo` = '$grupo',
         `objetivo`  = '$objetivo', 
         `fecha` = '$fecha', 
+        `horaSalida` = '$horaSalida', 
+        `horaLlegada` = '$horaLlegada', 
         `num_alumnos`   = '$num_alumnos',
         `num_alumnas`   = '$num_alumnas', 
         `asignatura`   = '$asignatura',
-        `estatus`   = '$estatus'
+        `estatus`   = '$estatus',
+        `comentarios`   = '$comentarios'
         WHERE id_visita = $id_visita");
  
         if ($con->query($sqlQuery) === TRUE) {

@@ -17,14 +17,16 @@ $semestre = $data-> semestre;
 $grupo = $data-> grupo;
 $objetivo= $data-> objetivo;
 $fecha= $data-> fecha;
+$horaSalida= $data-> horaSalida;
+$horaLlegada= $data-> horaLlegada;
 $num_alumnos= $data-> num_alumnos;
 $num_alumnas= $data-> num_alumnas;
 $asignatura= $data-> asignatura;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-    $sqlQuery =("INSERT INTO `solicitud_visita`(`id_usuario`,`id_carrera`, `id_empresa`,`semestre`, `grupo`,`objetivo`, `fecha`, `num_alumnos`, `num_alumnas`, `asignatura`)
-                                        VALUES ('".$id_usuario."','".$id_carrera."','".$id_empresa."','".$semestre."','".$grupo."','".$objetivo."', '".$fecha."','".$num_alumnos."', '".$num_alumnas."', '".$asignatura."' )");
+    $sqlQuery =("INSERT INTO `solicitud_visita`(`id_usuario`,`id_carrera`, `id_empresa`,`semestre`, `grupo`,`objetivo`, `fecha`, `horaSalida`,`horaLlegada`, `num_alumnos`, `num_alumnas`, `asignatura`)
+                                        VALUES ('".$id_usuario."','".$id_carrera."','".$id_empresa."','".$semestre."','".$grupo."','".$objetivo."', '".$fecha."','".$horaSalida."','".$horaLlegada."','".$num_alumnos."', '".$num_alumnas."', '".$asignatura."' )");
  
         if ($con->query($sqlQuery) === TRUE) {
             http_response_code(200);

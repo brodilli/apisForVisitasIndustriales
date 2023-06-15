@@ -10,14 +10,16 @@ $con=conectarDb();
 
 $data = json_decode(file_get_contents("php://input"));
 
+$id_visita = $data-> id_visita;
 $titulo = $data-> titulo;
 $inicio= $data-> inicio;
 $fin= $data-> fin;
+$color= $data-> color;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-    $sqlQuery =("INSERT INTO `dias_uso_vehiculo`(`titulo`,`inicio`, `fin`)
-                                        VALUES ('".$titulo."','".$inicio."','".$fin."' )");
+    $sqlQuery =("INSERT INTO `agenda`(`id_visita`,`titulo`,`inicio`, `fin`, `color`)
+                                        VALUES ('".$id_visita."','".$titulo."','".$inicio."','".$fin."', '".$color."' )");
  
         if ($con->query($sqlQuery) === TRUE) {
             http_response_code(200);

@@ -16,6 +16,7 @@ $nombres = $dataObject-> nombres;
 $apellidoP = $dataObject-> apellidoP;
 $apellidoM = $dataObject-> apellidoM;
 $correo = $dataObject-> correo;
+$contraseña = $dataObject-> contraseña;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
   $actualizacion = "UPDATE `usuario` SET 
@@ -23,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
     `tipoUser`='$tipoUser',
         `apellidoP`='$apellidoP',
         `apellidoM`='$apellidoM',
-		`correo`='$correo'
+		`correo`='$correo',
+    `contraseña`='$contraseña'
 		WHERE id_usuario = $id_usuario";
    
    $resultadoActualizacion = mysqli_query($conexion, $actualizacion); 

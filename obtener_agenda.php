@@ -3,7 +3,7 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
 header("Content-Type: text/html; charset=utf-8");
 $method = $_SERVER['REQUEST_METHOD'];
-$sql= "SELECT * FROM `dias_uso_vehiculo` ORDER BY id_uso_vehiculo ASC ";
+$sql= "SELECT * FROM `agenda` ORDER BY id_agenda ASC ";
 include "conectar.php";
 //sleep(1);
 function desconectar($conexion){
@@ -35,7 +35,7 @@ function obtenerArreglo($sql){
     $i=0;
 
     while($row = mysqli_fetch_assoc($resultado))
-    {
+    { 
         $arreglo[$i] = $row;
         $i++;
     }
