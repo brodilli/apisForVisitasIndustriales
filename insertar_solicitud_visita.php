@@ -22,11 +22,12 @@ $horaLlegada= $data-> horaLlegada;
 $num_alumnos= $data-> num_alumnos;
 $num_alumnas= $data-> num_alumnas;
 $asignatura= $data-> asignatura;
+$acompanante= $data-> acompanante;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-    $sqlQuery =("INSERT INTO `solicitud_visita`(`id_usuario`,`id_carrera`, `id_empresa`,`semestre`, `grupo`,`objetivo`, `fecha`, `horaSalida`,`horaLlegada`, `num_alumnos`, `num_alumnas`, `asignatura`)
-                                        VALUES ('".$id_usuario."','".$id_carrera."','".$id_empresa."','".$semestre."','".$grupo."','".$objetivo."', '".$fecha."','".$horaSalida."','".$horaLlegada."','".$num_alumnos."', '".$num_alumnas."', '".$asignatura."' )");
+    $sqlQuery =("INSERT INTO `solicitud_visita`(`id_usuario`,`id_carrera`, `id_empresa`,`semestre`, `grupo`,`objetivo`, `fecha`, `horaSalida`,`horaLlegada`, `num_alumnos`, `num_alumnas`, `asignatura`, `acompanante`)
+                                        VALUES ('".$id_usuario."','".$id_carrera."','".$id_empresa."','".$semestre."','".$grupo."','".$objetivo."', '".$fecha."','".$horaSalida."','".$horaLlegada."','".$num_alumnos."', '".$num_alumnas."', '".$asignatura."' , '".$acompanante."' )");
  
         if ($con->query($sqlQuery) === TRUE) {
             http_response_code(200);

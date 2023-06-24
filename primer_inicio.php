@@ -11,19 +11,11 @@ $conexion=conectarDb();
 $dataObject = json_decode(file_get_contents("php://input"));
 
 $id_usuario = $dataObject-> id_usuario;
-$nombres = $dataObject-> nombres;
-$apellidoP = $dataObject-> apellidoP;
-$apellidoM = $dataObject-> apellidoM;
-$correo = $dataObject-> correo;
 $contraseña = $dataObject-> contraseña;
 $numTelefono = $dataObject-> numTelefono;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
   $actualizacion = "UPDATE `usuario` SET 
-		`nombres`='$nombres', 		
-        `apellidoP`='$apellidoP',
-        `apellidoM`='$apellidoM',
-		`correo`='$correo',
 		`contraseña`='$contraseña',
     `numTelefono`='$numTelefono'
 		WHERE id_usuario = $id_usuario";
