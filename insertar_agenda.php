@@ -11,15 +11,21 @@ $con=conectarDb();
 $data = json_decode(file_get_contents("php://input"));
 
 $id_visita = $data-> id_visita;
-$titulo = $data-> titulo;
-$inicio= $data-> inicio;
-$fin= $data-> fin;
+$id_vehiculo = $data-> id_vehiculo;
+$fecha = $data-> fecha;
+$horaSalida = $data-> horaSalida;
+$horaLlegada = $data-> horaLlegada;
+$empresa = $data-> empresa;
+$lugar = $data-> lugar;
+$docente = $data-> docente;
+$numAlumnos = $data-> numAlumnos;
 $color= $data-> color;
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-    $sqlQuery =("INSERT INTO `agenda`(`id_visita`,`titulo`,`inicio`, `fin`, `color`)
-                                        VALUES ('".$id_visita."','".$titulo."','".$inicio."','".$fin."', '".$color."' )");
+    $sqlQuery =("INSERT INTO agenda (id_visita, id_vehiculo, fecha, horaSalida, horaLlegada, empresa, lugar, docente, numAlumnos, color) 
+                    VALUES ('$id_visita', '$id_vehiculo', '$fecha', '$horaSalida', '$horaLlegada', '$empresa', '$lugar', '$docente', '$numAlumnos', '$color')");
+    
  
         if ($con->query($sqlQuery) === TRUE) {
             http_response_code(200);

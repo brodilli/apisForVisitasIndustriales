@@ -29,11 +29,12 @@ $sqlQuery = "SELECT COUNT(*) AS total FROM solicitud_visita WHERE id_usuario='$i
 // Ejecutar la consulta SQL
 // Aquí debes usar tu método de conexión y ejecución de consultas a la base de datos
 $resultado = $con->query($sqlQuery);
+
 if ($resultado) {
+    
     // Obtener el número de solicitudes existentes
     $fila = $resultado->fetch_assoc();
     $totalSolicitudes = $fila['total'];
-    
 
     // Verificar si se excede el límite de 4 solicitudes
     if ($totalSolicitudes <= 4) {
@@ -44,6 +45,7 @@ if ($resultado) {
                 if ($con->query($sqlQuery) === TRUE) {
                     http_response_code(200);
                     echo json_encode(array('isOk'=>'true','msj'=>'Registro exitoso'));
+                    // echo json_decode("num"=>$totalSolicitudes)
                 } else {
                     echo json_encode(array('isOk'=>'false','msj'=>$con->error)); 
                 }
@@ -52,8 +54,10 @@ if ($resultado) {
         
         // Aquí puedes agregar cualquier otra acción o mensaje de error que desees mostrar
     } else {
-        echo "406";
-}
+        echo json_encode(array('isMore'=>"406",'msj'=>'No se puede registrar más de 4 solicitudes'));
+        
+    }
+
 }
 
  ?>
