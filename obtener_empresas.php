@@ -46,6 +46,7 @@ function obtenerArreglo($sql){
 }
 
         $r = obtenerArreglo($sql);
+        echo "Consulta SQL: $r";
         echo json_encode($r);
 
 ?>
