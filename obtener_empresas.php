@@ -5,6 +5,7 @@ header("Content-Type: text/html; charset=utf-8");
 $method = $_SERVER['REQUEST_METHOD'];
 $sql= "SELECT * FROM `empresa` ORDER BY id_empresa ASC ";
 include "conectar.php";
+echo "Consulta SQL: $r";
 //sleep(1);
 function desconectar($conexion){
 
@@ -46,7 +47,7 @@ function obtenerArreglo($sql){
 }
 
         $r = obtenerArreglo($sql);
-        echo "Consulta SQL: $r";
+        
         echo json_encode($r);
 
 ?>
