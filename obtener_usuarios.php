@@ -22,7 +22,11 @@ function desconectar($conexion){
 function obtenerArreglo($sql){
     //Creamos la conexion con la funcion anterior
   $conexion = conectarDB();
-
+    if (mysqli_connect_error()) {
+        die("Error de conexión a la base de datos: " . mysqli_connect_error());
+    } else {
+        echo "Conexión exitosa a la base de datos.";
+    }
     //generamos la consulta
 
         mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
