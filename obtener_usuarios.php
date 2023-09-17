@@ -1,55 +1,53 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Content-Type: text/html; charset=utf-8");
+header("Content-Type: application/json; charset=utf-8");
 $method = $_SERVER['REQUEST_METHOD'];
-$sql= "SELECT * FROM `usuario` ORDER BY id_usuario ASC ";
+$sql = "SELECT * FROM `usuario` ORDER BY id_usuario ASC ";
 include "conectar.php";
-//sleep(1);
+
 function desconectar($conexion){
-
     $close = mysqli_close($conexion);
-
-        if($close){
-            echo '';
-        }else{
-            echo 'Ha sucedido un error inexperado en la conexión de la base de datos';
-        }
-
-    return $close;
+    if ($close) {
+        return true;
+    } else {
+        return "Ha sucedido un error inexperado en la conexión de la base de datos: " . mysqli_error($conexion);
+    }
 }
 
 function obtenerArreglo($sql){
-    //Creamos la conexion con la funcion anterior
-  $conexion = conectarDB();
+    $conexion = conectarDB();
     if (mysqli_connect_error()) {
         die("Error de conexión a la base de datos: " . mysqli_connect_error());
     } else {
         echo "Conexión exitosa a la base de datos.";
     }
-    //generamos la consulta
 
-        mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
+    mysqli_set_charset($conexion, "utf8");
 
-    if(!$resultado = mysqli_query($conexion, $sql)) die(); //si la conexión cancelar programa
-
-    $arreglo = array(); //creamos un array
-
-    //guardamos en un array todos los datos de la consulta
-    $i=0;
-
-    while($row = mysqli_fetch_assoc($resultado))
-    {
-        $arreglo[$i] = $row;
-        $i++;
+    if (!$resultado = mysqli_query($conexion, $sql)) {
+        return "Error en la consulta SQL: " . mysqli_error($conexion);
     }
 
-    desconectar($conexion); //desconectamos la base de datos
+    $arreglo = array();
 
-    return $arreglo; //devolvemos el array
+    while ($row = mysqli_fetch_assoc($resultado)) {
+        $arreglo[] = $row;
+    }
+
+    $error = desconectar($conexion);
+    if ($error === true) {
+        return $arreglo;
+    } else {
+        return "Error al desconectar la base de datos: " . $error;
+    }
 }
 
-        $r = obtenerArreglo($sql);
-        echo json_encode($r);
+$data = obtenerArreglo($sql);
 
+if (is_array($data)) {
+    echo json_encode($data);
+} else {
+    echo json_encode(array("error" => $data));
+}
 ?>
