@@ -10,8 +10,16 @@ $conn = conectarDb();
 
 $data = json_decode(file_get_contents("php://input"));
 
-$correo = $data->correo;
-$contraseña = $data->contraseña;
+if ($data !== null && isset($data->correo) && isset($data->contraseña)) {
+    $correo = $data->correo;
+    $contraseña = $data->contraseña;
+    // Resto del código
+} else {
+    // Manejar el caso en el que los datos no están presentes o son incorrectos
+    http_response_code(400); // Bad Request
+    echo json_encode(array("error" => "Los datos de inicio de sesión son incorrectos."));
+}
+
 
 try {
     $stmt = $conn->prepare("SELECT * FROM `usuario` WHERE `correo` = :correo AND `contraseña` = :contraseña");
