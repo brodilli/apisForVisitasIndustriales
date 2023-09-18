@@ -6,8 +6,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 function conectarDB(){
     $servidor = "localhost";
-    $usuario = "agendaCitas";
-    $password = "agendaCitas2023#";
+    $usuario = "visitas";
+    $password = "Myp@ssw0";
     $bd = "visitas_industriales";
 
     try {
