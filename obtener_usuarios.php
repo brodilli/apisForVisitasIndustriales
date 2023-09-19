@@ -25,8 +25,8 @@ function obtenerUsuarios() {
 
 try {
     $usuarios = obtenerUsuarios();
-    echo json_encode($usuarios);
+    echo json_encode(array('status' => 200, 'data' => $usuarios)); // Agregar 'status' 200 y 'data'
 } catch (Exception $e) {
-    echo json_encode(array('error' => $e->getMessage()));
+    echo json_encode(array('status' => 500, 'error' => $e->getMessage())); // Agregar 'status' 500
 }
 ?>
