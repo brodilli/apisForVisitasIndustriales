@@ -1,9 +1,9 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method');
+header('Access-Control-Allow-Headers: Content-Type, Origin, X-Requested-With, Authorization');
 header('Content-Type: application/json; charset=utf-8');
 
-include 'conectar.php';
+require 'conectar.php';
 
 function obtenerEmpresas() {
     $conexion = conectarDB();
@@ -13,7 +13,7 @@ function obtenerEmpresas() {
     mysqli_set_charset($conexion, 'utf8'); // Formato de datos utf8
 
     if (!$resultado = mysqli_query($conexion, $sql)) {
-        die('Error en la consulta SQL: ' . mysqli_error($conexion));
+        return array('error' => 'Error en la consulta SQL: ' . mysqli_error($conexion));
     }
 
     $empresas = array();
@@ -29,8 +29,15 @@ function obtenerEmpresas() {
 
 try {
     $empresas = obtenerEmpresas();
-    echo json_encode($empresas);
+    if (is_array($empresas)) {
+        http_response_code(200); // Éxito, código 200
+        echo json_encode($empresas);
+    } else {
+        http_response_code(500); // Error del servidor, código 500
+        echo json_encode($empresas);
+    }
 } catch (Exception $e) {
+    http_response_code(500); // Error del servidor, código 500
     echo json_encode(array('error' => $e->getMessage()));
 }
 ?>
