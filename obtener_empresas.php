@@ -1,28 +1,24 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type, Origin, X-Requested-With, Authorization');
+header('Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method');
 header('Content-Type: application/json; charset=utf-8');
 
-require 'conectar.php';
+include 'conectar.php';
 
 function obtenerEmpresas() {
     $conexion = conectarDB();
 
     $sql = 'SELECT * FROM empresa ORDER BY id_empresa ASC';
 
-    mysqli_set_charset($conexion, 'utf8'); // Formato de datos utf8
+    $stmt = $conexion->prepare($sql);
 
-    if (!$resultado = mysqli_query($conexion, $sql)) {
-        return array('error' => 'Error en la consulta SQL: ' . mysqli_error($conexion));
+    if (!$stmt) {
+        return array('error' => 'Error en la consulta SQL: ' . $conexion->errorInfo()[2]);
     }
 
-    $empresas = array();
+    $stmt->execute();
 
-    while ($row = mysqli_fetch_assoc($resultado)) {
-        $empresas[] = $row;
-    }
-
-    mysqli_close($conexion);
+    $empresas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     return $empresas;
 }
@@ -31,13 +27,13 @@ try {
     $empresas = obtenerEmpresas();
     if (is_array($empresas)) {
         http_response_code(200); // Éxito, código 200
-        echo json_encode($empresas);
+        echo json_encode(array('status' => 200, 'data' => $empresas));
     } else {
         http_response_code(500); // Error del servidor, código 500
-        echo json_encode($empresas);
+        echo json_encode(array('status' => 500, 'error' => $empresas));
     }
 } catch (Exception $e) {
     http_response_code(500); // Error del servidor, código 500
-    echo json_encode(array('error' => $e->getMessage()));
+    echo json_encode(array('status' => 500, 'error' => $e->getMessage()));
 }
 ?>
