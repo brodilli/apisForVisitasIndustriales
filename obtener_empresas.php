@@ -1,53 +1,36 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Content-Type: text/html; charset=utf-8");
-$method = $_SERVER['REQUEST_METHOD'];
-$sql= "SELECT * FROM `empresa` ORDER BY id_empresa ASC ";
-include "conectar.php";
-echo "Consulta SQL: $r";
-//sleep(1);
-function desconectar($conexion){
+header('Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method');
+header('Content-Type: application/json; charset=utf-8');
 
-    $close = mysqli_close($conexion);
+include 'conectar.php';
 
-        if($close){
-            echo '';
-        }else{
-            echo 'Ha sucedido un error inexperado en la conexión de la base de datos';
-        }
+function obtenerEmpresas() {
+    $conexion = conectarDB();
 
-    return $close;
-}
+    $sql = 'SELECT * FROM empresa ORDER BY id_empresa ASC';
 
-function obtenerArreglo($sql){
-    //Creamos la conexion con la funcion anterior
-  $conexion = conectarDB();
+    mysqli_set_charset($conexion, 'utf8'); // Formato de datos utf8
 
-    //generamos la consulta
-
-        mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
-
-    if(!$resultado = mysqli_query($conexion, $sql)) die(); //si la conexión cancelar programa
-
-    $arreglo = array(); //creamos un array
-
-    //guardamos en un array todos los datos de la consulta
-    $i=0;
-
-    while($row = mysqli_fetch_assoc($resultado))
-    {
-        $arreglo[$i] = $row;
-        $i++;
+    if (!$resultado = mysqli_query($conexion, $sql)) {
+        die('Error en la consulta SQL: ' . mysqli_error($conexion));
     }
 
-    desconectar($conexion); //desconectamos la base de datos
+    $empresas = array();
 
-    return $arreglo; //devolvemos el array
+    while ($row = mysqli_fetch_assoc($resultado)) {
+        $empresas[] = $row;
+    }
+
+    mysqli_close($conexion);
+
+    return $empresas;
 }
 
-        $r = obtenerArreglo($sql);
-        
-        echo json_encode($r);
-
+try {
+    $empresas = obtenerEmpresas();
+    echo json_encode($empresas);
+} catch (Exception $e) {
+    echo json_encode(array('error' => $e->getMessage()));
+}
 ?>
