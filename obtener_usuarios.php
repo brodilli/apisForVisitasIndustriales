@@ -25,8 +25,11 @@ function obtenerUsuarios() {
 
 try {
     $usuarios = obtenerUsuarios();
-    echo json_encode(array('status' => 200, 'data' => $usuarios)); // Agregar 'status' 200 y 'data'
+    $response = array('status' => 200, 'data' => $usuarios);
 } catch (Exception $e) {
-    echo json_encode(array('status' => 500, 'error' => $e->getMessage())); // Agregar 'status' 500
+    $response = array('status' => 500, 'error' => $e->getMessage());
 }
+
+// Ahora, asegurémonos de que solo se devuelva JSON
+echo json_encode($response);
 ?>
