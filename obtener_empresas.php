@@ -13,7 +13,7 @@ function obtenerEmpresas() {
     $stmt = $conexion->prepare($sql);
 
     if (!$stmt) {
-        return array('error' => 'Error en la consulta SQL: ' . $conexion->errorInfo()[2]);
+        throw new Exception('Error en la consulta SQL: ' . $conexion->errorInfo()[2]);
     }
 
     $stmt->execute();
@@ -30,7 +30,7 @@ try {
         echo json_encode(array('status' => 200, 'data' => $empresas));
     } else {
         http_response_code(500); // Error del servidor, código 500
-        echo json_encode(array('status' => 500, 'error' => $empresas));
+        echo json_encode(array('status' => 500, 'error' => 'Error al obtener las empresas'));
     }
 } catch (Exception $e) {
     http_response_code(500); // Error del servidor, código 500
