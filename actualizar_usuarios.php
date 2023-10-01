@@ -1,42 +1,51 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST");
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Content-Type: application/json; charset=UTF-8');
 
+require 'conectar.php'; // Asegúrate de que conectar.php establezca la conexión PDO correctamente
+$conexion = conectarDb();
 
-require 'conectar.php';
-$conexion=conectarDb();
-$dataObject = json_decode(file_get_contents("php://input"));
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    try {
+        $dataObject = json_decode(file_get_contents("php://input"));
 
-$id_usuario = $dataObject-> id_usuario;
-$nombres = $dataObject-> nombres;
-$apellidoP = $dataObject-> apellidoP;
-$apellidoM = $dataObject-> apellidoM;
-$correo = $dataObject-> correo;
-$contraseña = $dataObject-> contraseña;
-$numTelefono = $dataObject-> numTelefono;
+        $id_usuario = $dataObject->id_usuario;
+        $nombres = $dataObject->nombres;
+        $apellidoP = $dataObject->apellidoP;
+        $apellidoM = $dataObject->apellidoM;
+        $correo = $dataObject->correo;
+        $contraseña = $dataObject->contraseña;
+        $numTelefono = $dataObject->numTelefono;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')  {
-  $actualizacion = "UPDATE `usuario` SET 
-		`nombres`='$nombres', 		
-        `apellidoP`='$apellidoP',
-        `apellidoM`='$apellidoM',
-		`correo`='$correo',
-		`contraseña`='$contraseña',
-    `numTelefono`='$numTelefono'
-		WHERE id_usuario = $id_usuario";
-   
-   $resultadoActualizacion = mysqli_query($conexion, $actualizacion); 
+        // Consulta SQL preparada para actualizar los datos
+        $sqlQuery = "UPDATE usuario SET 
+            nombres = :nombres, 
+            apellidoP = :apellidoP,
+            apellidoM = :apellidoM,
+            correo = :correo,
+            contraseña = :contraseña,
+            numTelefono = :numTelefono
+            WHERE id_usuario = :id_usuario";
 
-   if($resultadoActualizacion)
-   {
-    echo json_encode(array('isOk'=>true,'msj'=>'Registro editado de forma exitosa.'));
-   }
-   else
-   {
-    echo json_encode(array('isOk'=>false,'msj'=>$conexion->error)); 
-   }
+        $stmt = $conexion->prepare($sqlQuery);
+        $stmt->bindParam(':nombres', $nombres);
+        $stmt->bindParam(':apellidoP', $apellidoP);
+        $stmt->bindParam(':apellidoM', $apellidoM);
+        $stmt->bindParam(':correo', $correo);
+        $stmt->bindParam(':contraseña', $contraseña);
+        $stmt->bindParam(':numTelefono', $numTelefono);
+        $stmt->bindParam(':id_usuario', $id_usuario);
+
+        if ($stmt->execute()) {
+            http_response_code(200);
+            echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
+        } else {
+            throw new Exception("Error en la consulta");
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(array('isOk' => false, 'msj' => 'Error en la solicitud: ' . $e->getMessage()));
+    }
 }
 ?>

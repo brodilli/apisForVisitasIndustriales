@@ -21,17 +21,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
             
             if ($stmt->execute()) {
+                http_response_code(200);
                 echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
             } else {
+                http_response_code(500);
                 echo json_encode(array('isOk' => false, 'msj' => 'Error al editar el registro.'));
             }
         } catch (PDOException $e) {
+            http_response_code(500);
             echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $e->getMessage()));
         }
     } else {
+        http_response_code(400);
         echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios.'));
     }
 } else {
+    http_response_code(405);
     echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido.'));
 }
 ?>

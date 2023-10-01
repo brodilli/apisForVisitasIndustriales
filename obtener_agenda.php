@@ -1,51 +1,46 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
-header("Content-Type: text/html; charset=utf-8");
+header('Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method');
+header('Content-Type: application/json; charset=UTF-8');
 $method = $_SERVER['REQUEST_METHOD'];
-$sql= "SELECT * FROM `agenda` ORDER BY id_agenda ASC ";
+$sql = "SELECT * FROM `agenda` ORDER BY id_agenda ASC";
 include "conectar.php";
-//sleep(1);
-function desconectar($conexion){
 
-    $close = mysqli_close($conexion);
+function obtenerArreglo($pdo, $sql)
+{
+    try {
+        $statement = $pdo->query($sql);
 
-        if($close){
-            echo '';
-        }else{
-            echo 'Ha sucedido un error inexperado en la conexión de la base de datos';
+        if (!$statement) {
+            throw new Exception('Error en la consulta.');
         }
 
-    return $close;
+        $arreglo = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $arreglo;
+    } catch (Exception $e) {
+        return array('error' => $e->getMessage());
+    }
 }
 
-function obtenerArreglo($sql){
-    //Creamos la conexion con la funcion anterior
-  $conexion = conectarDB();
+try {
+    $pdo = conectarDB(); // Función conectarDB debería devolver una instancia PDO
 
-    //generamos la consulta
-
-        mysqli_set_charset($conexion, "utf8"); //formato de datos utf8
-
-    if(!$resultado = mysqli_query($conexion, $sql)) die(); //si la conexión cancelar programa
-
-    $arreglo = array(); //creamos un array
-
-    //guardamos en un array todos los datos de la consulta
-    $i=0;
-
-    while($row = mysqli_fetch_assoc($resultado))
-    { 
-        $arreglo[$i] = $row;
-        $i++;
+    if (!$pdo) {
+        throw new Exception('Error en la conexión a la base de datos.');
     }
 
-    desconectar($conexion); //desconectamos la base de datos
+    $arreglo = obtenerArreglo($pdo, $sql);
 
-    return $arreglo; //devolvemos el array
+    if (isset($arreglo['error'])) {
+        http_response_code(500);
+    } else {
+        http_response_code(200);
+    }
+
+    echo json_encode($arreglo);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(array('error' => $e->getMessage()));
 }
-
-        $r = obtenerArreglo($sql);
-        echo json_encode($r);
-
 ?>

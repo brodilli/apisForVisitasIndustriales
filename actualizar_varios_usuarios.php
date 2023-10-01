@@ -15,17 +15,21 @@ function actualizarUsuario($conexion, $dataObject) {
         $correo = isset($dataObject->correo) ? $dataObject->correo : null;
         $contraseña = isset($dataObject->contraseña) ? $dataObject->contraseña : null;
 
-        // Utilice consultas preparadas para evitar la inyección SQL
-        $stmt = $conexion->prepare("UPDATE `usuario` SET 
-            `nombres`=?, `tipoUser`=?, `apellidoP`=?, `apellidoM`=?, `correo`=?, `contraseña`=?
-            WHERE id_usuario = ?");
-        $stmt->bind_param("ssssssi", $nombres, $tipoUser, $apellidoP, $apellidoM, $correo, $contraseña, $id_usuario);
-        $stmt->execute();
+        try {
+            // Utilice consultas preparadas para evitar la inyección SQL
+            $stmt = $conexion->prepare("UPDATE `usuario` SET 
+                `nombres`=?, `tipoUser`=?, `apellidoP`=?, `apellidoM`=?, `correo`=?, `contraseña`=?
+                WHERE id_usuario = ?");
+            $stmt->bind_param("ssssssi", $nombres, $tipoUser, $apellidoP, $apellidoM, $correo, $contraseña, $id_usuario);
+            $stmt->execute();
 
-        if ($stmt->affected_rows > 0) {
-            return array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.');
-        } else {
-            return array('isOk' => false, 'msj' => 'No se realizó ninguna edición en el registro.');
+            if ($stmt->affected_rows > 0) {
+                return array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.');
+            } else {
+                return array('isOk' => false, 'msj' => 'No se realizó ninguna edición en el registro.');
+            }
+        } catch (Exception $e) {
+            return array('isOk' => false, 'msj' => 'Error en la solicitud: ' . $e->getMessage());
         }
     } else {
         return array('isOk' => false, 'msj' => 'Falta el parámetro id_usuario en la solicitud.');
