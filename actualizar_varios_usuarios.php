@@ -15,21 +15,17 @@ function actualizarUsuario($conexion, $dataObject) {
         $correo = isset($dataObject->correo) ? $dataObject->correo : null;
         $contraseña = isset($dataObject->contraseña) ? $dataObject->contraseña : null;
 
-        $actualizacion = "UPDATE `usuario` SET 
-            `nombres`='$nombres',
-            `tipoUser`='$tipoUser',
-            `apellidoP`='$apellidoP',
-            `apellidoM`='$apellidoM',
-            `correo`='$correo',
-            `contraseña`='$contraseña'
-            WHERE id_usuario = $id_usuario";
+        // Utilice consultas preparadas para evitar la inyección SQL
+        $stmt = $conexion->prepare("UPDATE `usuario` SET 
+            `nombres`=?, `tipoUser`=?, `apellidoP`=?, `apellidoM`=?, `correo`=?, `contraseña`=?
+            WHERE id_usuario = ?");
+        $stmt->bind_param("ssssssi", $nombres, $tipoUser, $apellidoP, $apellidoM, $correo, $contraseña, $id_usuario);
+        $stmt->execute();
 
-        $resultadoActualizacion = mysqli_query($conexion, $actualizacion);
-
-        if ($resultadoActualizacion) {
+        if ($stmt->affected_rows > 0) {
             return array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.');
         } else {
-            return array('isOk' => false, 'msj' => $conexion->error);
+            return array('isOk' => false, 'msj' => 'No se realizó ninguna edición en el registro.');
         }
     } else {
         return array('isOk' => false, 'msj' => 'Falta el parámetro id_usuario en la solicitud.');
@@ -39,6 +35,9 @@ function actualizarUsuario($conexion, $dataObject) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conexion = conectarDb();
     $dataObject = json_decode(file_get_contents('php://input'));
+    
+    // Agregar autenticación y autorización aquí si es necesario
+    
     $response = actualizarUsuario($conexion, $dataObject);
     echo json_encode($response);
 } else {
