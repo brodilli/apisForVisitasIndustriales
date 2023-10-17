@@ -14,14 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $id_usuario = $dataObject->id_usuario;
         $numSesion = $dataObject->numSesion;
 
-        $actualizacion = "UPDATE `usuario` SET `numSesion`='$numSesion' WHERE id_usuario = $id_usuario";
+        $actualizacion = "UPDATE `usuario` SET `numSesion` = :numSesion WHERE id_usuario = :id_usuario";
 
-        $resultadoActualizacion = mysqli_query($conexion, $actualizacion);
+        $stmt = $conexion->prepare($actualizacion);
+        $stmt->bindParam(':id_usuario', $id_usuario);
+        $stmt->bindParam(':numSesion', $numSesion);
 
-        if ($resultadoActualizacion) {
+        if ($stmt->execute()) {
             echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
         } else {
-            echo json_encode(array('isOk' => false, 'msj' => 'Error al editar el registro: ' . $conexion->error));
+            echo json_encode(array('isOk' => false, 'msj' => 'Error al editar el registro: ' . $stmt->errorInfo()));
         }
     } else {
         echo json_encode(array('isOk' => false, 'msj' => 'Datos faltantes en la solicitud.'));
