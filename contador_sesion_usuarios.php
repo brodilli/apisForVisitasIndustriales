@@ -22,9 +22,7 @@ try {
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
-            // Obtener los valores actualizados
-            $resultadoActualizacion = array('id_usuario' => $id_usuario, 'numSesion' => $numSesion);
-            echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.', 'resultadoActualizacion' => $resultadoActualizacion));
+            echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
         } else {
             echo json_encode(array('isOk' => false, 'msj' => 'No se encontraron registros para actualizar.'));
         }
