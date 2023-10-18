@@ -23,7 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($stmt->execute()) {
                 http_response_code(200);
-                echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
+                echo json_encode(array(
+                    'isOk' => true,
+                    'msj' => 'Registro editado de forma exitosa.',
+                    'nombre' => $nombre,
+                    'id_usuario' => $id_usuario
+                ));
             } else {
                 http_response_code(500);
                 echo json_encode(array('isOk' => false, 'msj' => 'Error al editar el registro.'));
