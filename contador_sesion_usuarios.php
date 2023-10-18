@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(array(
                     'isOk' => true,
                     'msj' => 'Registro editado de forma exitosa.',
-                    'nombre' => $nombre,
+                    'nombres' => $nombres,
                     'id_usuario' => $id_usuario
                 ));
             } else {
