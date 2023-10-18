@@ -22,13 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
             
             if ($stmt->execute()) {
+                // Consulta para obtener nombres
+                $consultaNombres = "SELECT nombres FROM usuario WHERE id_usuario = :id_usuario";
+                $stmtNombres = $conexion->prepare($consultaNombres);
+                $stmtNombres->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                $stmtNombres->execute();
+                $nombres = $stmtNombres->fetch(PDO::FETCH_ASSOC)['nombres'];
+            
                 http_response_code(200);
                 echo json_encode(array(
                     'isOk' => true,
                     'msj' => 'Registro editado de forma exitosa.',
                     'nombres' => $nombres,
                     'id_usuario' => $id_usuario
-                ));
+                ));            
             } else {
                 http_response_code(500);
                 echo json_encode(array('isOk' => false, 'msj' => 'Error al editar el registro.'));
