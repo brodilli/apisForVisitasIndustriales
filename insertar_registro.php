@@ -1,21 +1,23 @@
 <?php
+// Establece los encabezados CORS para permitir solicitudes desde cualquier origen.
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 header('Content-Type: application/json; charset=UTF-8');
 
-require 'conectar.php';
-$con = conectarDb();
+require 'conectar.php'; // Asegúrate de que este archivo exista y contenga la función conectarDb.
+
+$con = conectarDb(); // Asegúrate de que esta función esté definida y devuelva una conexión a la base de datos.
 
 $data = json_decode(file_get_contents('php://input'));
 
-$tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
-$nombres = isset($data->nombres) ? $data->nombres : null;
-$apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
-$apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
-$correo = isset($data->correo) ? $data->correo : null;
-$contraseña = isset($data->contraseña) ? $data->contraseña : null;
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
+    $nombres = isset($data->nombres) ? $data->nombres : null;
+    $apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
+    $apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
+    $correo = isset($data->correo) ? $data->correo : null;
+    $contraseña = isset($data->contraseña) ? $data->contraseña : null;
+
     if (
         $tipoUser !== null &&
         $nombres !== null &&
@@ -24,36 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $correo !== null &&
         $contraseña !== null
     ) {
-        try {
-            $result = mysqli_query($con, "SELECT * FROM `usuario` WHERE `correo` = '".$correo."'");
-            $nums = mysqli_num_rows($result);
+        // Evita la inyección de SQL utilizando consultas preparadas.
+        $sqlQuery = "INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) VALUES (?, ?, ?, ?, ?, ?)";
 
-            if ($nums > 0) {
-                http_response_code(400);
-                echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
-            } else {
-                $sqlQuery = "INSERT INTO `usuario`(`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`)
-                    VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña)";
-                
-                $stmt = $con->prepare($sqlQuery);
-                $stmt->bindParam(':tipoUser', $tipoUser);
-                $stmt->bindParam(':nombres', $nombres);
-                $stmt->bindParam(':apellidoP', $apellidoP);
-                $stmt->bindParam(':apellidoM', $apellidoM);
-                $stmt->bindParam(':correo', $correo);
-                $stmt->bindParam(':contraseña', $contraseña);
+        $stmt = $con->prepare($sqlQuery);
+        $stmt->bind_param("ssssss", $tipoUser, $nombres, $apellidoP, $apellidoM, $correo, $contraseña);
 
-                if ($stmt->execute()) {
-                    http_response_code(200);
-                    echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
-                } else {
-                    http_response_code(500);
-                    echo json_encode(array('isOk' => false, 'msj' => $con->error));
-                }
-            }
-        } catch (PDOException $e) {
+        if ($stmt->execute()) {
+            http_response_code(200);
+            echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
+        } else {
             http_response_code(500);
-            echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $e->getMessage()));
+            echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $stmt->error));
         }
     } else {
         http_response_code(400);
@@ -63,4 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     http_response_code(405);
     echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido.'));
 }
+
+mysqli_close($con); // Cierra la conexión a la base de datos después de su uso.
 ?>
