@@ -1,52 +1,47 @@
 <?php
-// Establece los encabezados CORS para permitir solicitudes desde cualquier origen.
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
 
-require 'conectar.php'; // Asegúrate de que este archivo exista y contenga la función conectarDb.
-
-$con = conectarDb(); // Asegúrate de que esta función esté definida y devuelva una conexión a la base de datos.
+require 'conectar.php';
+$con = conectarDb();
 
 $data = json_decode(file_get_contents('php://input'));
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
-    $nombres = isset($data->nombres) ? $data->nombres : null;
-    $apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
-    $apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
-    $correo = isset($data->correo) ? $data->correo : null;
-    $contraseña = isset($data->contraseña) ? $data->contraseña : null;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Validar que los campos requeridos estén presentes en la solicitud
+    if (isset($data->tipoUser, $data->nombres, $data->apellidoP, $data->apellidoM, $data->correo, $data->contraseña)) {
+        $tipoUser = $data->tipoUser;
+        $nombres = $data->nombres;
+        $apellidoP = $data->apellidoP;
+        $apellidoM = $data->apellidoM;
+        $correo = $data->correo;
+        $contraseña = $data->contraseña;
 
-    if (
-        $tipoUser !== null &&
-        $nombres !== null &&
-        $apellidoP !== null &&
-        $apellidoM !== null &&
-        $correo !== null &&
-        $contraseña !== null
-    ) {
-        // Evita la inyección de SQL utilizando consultas preparadas.
-        $sqlQuery = "INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) VALUES (?, ?, ?, ?, ?, ?)";
+        // Verificar si el correo ya está registrado
+        $result = mysqli_query($con, "SELECT * FROM `usuario` WHERE `correo` = '" . $correo . "'");
+        $nums = mysqli_num_rows($result);
 
-        $stmt = $con->prepare($sqlQuery);
-        $stmt->bind_param("ssssss", $tipoUser, $nombres, $apellidoP, $apellidoM, $correo, $contraseña);
-
-        if ($stmt->execute()) {
-            http_response_code(200);
-            echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
+        if ($nums > 0) {
+            echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
         } else {
-            http_response_code(500);
-            echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $stmt->error));
+            // Insertar el nuevo registro
+            $sqlQuery = "INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) 
+             VALUES ('$tipoUser', '$nombres', '$apellidoP', '$apellidoM', '$correo', '$contraseña')";
+
+            if ($con->query($sqlQuery) === TRUE) {
+                http_response_code(200);
+                echo json_encode(array('isOk' => 'true', 'msj' => 'Registro exitoso'));
+            } else {
+                http_response_code(500);
+                echo json_encode(array('isOk' => 'false', 'msj' => 'Error en la base de datos: ' . $con->error));
+            }
         }
     } else {
-        http_response_code(400);
-        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios.'));
+        http_response_code(400); // Bad Request
+        echo json_encode(array('isOk' => 'false', 'msj' => 'Faltan campos en la solicitud.'));
     }
-} else {
-    http_response_code(405);
-    echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido.'));
+    mysqli_close($con);
 }
-
-mysqli_close($con); // Cierra la conexión a la base de datos después de su uso.
 ?>
