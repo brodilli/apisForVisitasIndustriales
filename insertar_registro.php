@@ -1,17 +1,29 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
-header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
 $con = conectarDb();
 
 $data = json_decode(file_get_contents('php://input'));
+$tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
+$nombres = isset($data->nombres) ? $data->nombres : null;
+$apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
+$apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
+$correo = isset($data->correo) ? $data->correo : null;
+$contraseña = isset($data->contraseña) ? $data->contraseña : null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validar que los campos requeridos estén presentes en la solicitud
-    if (isset($data->tipoUser, $data->nombres, $data->apellidoP, $data->apellidoM, $data->correo, $data->contraseña)) {
+    // Validar que los campos requeridos estén presentes en la solicitud y no estén vacíos
+    if (
+        !empty($data->tipoUser) &&
+        !empty($data->nombres) &&
+        !empty($data->apellidoP) &&
+        !empty($data->apellidoM) &&
+        !empty($data->correo) &&
+        !empty($data->contraseña)
+    ) {
         $tipoUser = $data->tipoUser;
         $nombres = $data->nombres;
         $apellidoP = $data->apellidoP;
