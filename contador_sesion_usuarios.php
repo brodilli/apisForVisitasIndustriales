@@ -22,19 +22,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
             
             if ($stmt->execute()) {
-                // Consulta para obtener nombres
-                $consultaNombres = "SELECT nombres FROM usuario WHERE id_usuario = :id_usuario";
-                $stmtNombres = $conexion->prepare($consultaNombres);
-                $stmtNombres->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-                $stmtNombres->execute();
-                $nombres = $stmtNombres->fetch(PDO::FETCH_ASSOC)['nombres'];
+                // Consulta para obtener nombres y tipoUser
+                $consultaDatos = "SELECT nombres, tipoUser FROM usuario WHERE id_usuario = :id_usuario";
+                $stmtDatos = $conexion->prepare($consultaDatos);
+                $stmtDatos->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+                $stmtDatos->execute();
+                $datos = $stmtDatos->fetch(PDO::FETCH_ASSOC);
             
                 http_response_code(200);
                 echo json_encode(array(
                     'isOk' => true,
                     'msj' => 'Registro editado de forma exitosa.',
-                    'nombres' => $nombres,
-                    'id_usuario' => $id_usuario
+                    'nombres' => $datos['nombres'],
+                    'id_usuario' => $id_usuario,
+                    'tipoUser' => $datos['tipoUser']
                 ));            
             } else {
                 http_response_code(500);
