@@ -14,7 +14,7 @@ if ($data !== null && isset($data->correo) && isset($data->contraseña)) {
     $contraseña = $data->contraseña;
 
     try {
-        $stmt = $conn->prepare("SELECT *, tipoUser FROM `usuario` WHERE `correo` = :correo AND `contraseña` = :contrasena");
+        $stmt = $conn->prepare("SELECT * FROM `usuario` WHERE `correo` = :correo AND `contraseña` = :contrasena");
         $stmt->bindParam(':correo', $correo);
         $stmt->bindParam(':contrasena', $contraseña);
 
@@ -22,20 +22,13 @@ if ($data !== null && isset($data->correo) && isset($data->contraseña)) {
             $rs = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($rs) {
-                $response = array(
-                    "data" => array(
-                        "nombres" => $rs["nombres"],
-                        "id_usuario" => $rs["id_usuario"],
-                        "tipoUser" => $rs["tipoUser"]
-                    ),
-                    "Status" => "200"
-                );
                 http_response_code(200);
+                $response = array("data" => $rs, "Status" => "200");
                 echo json_encode($response);
             } else {
                 http_response_code(404);
                 echo json_encode(array("error" => "Usuario no encontrado", "Status" => "404"));
-            }            
+            }
         } else {
             http_response_code(500);
             echo json_encode(array("error" => "Error en la consulta SQL", "Status" => "500"));
