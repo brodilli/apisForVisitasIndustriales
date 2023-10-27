@@ -23,7 +23,9 @@ if ($data !== null && isset($data->correo) && isset($data->contraseña)) {
 
             if ($rs) {
                 http_response_code(200);
-                echo json_encode(array("data" => $rs, "Status" => "200"));
+                // Incluye el campo 'tipoUser' en la respuesta
+                $response = array("data" => $rs, "Status" => "200");
+                echo json_encode($response);
             } else {
                 http_response_code(404);
                 echo json_encode(array("error" => "Usuario no encontrado", "Status" => "404"));
