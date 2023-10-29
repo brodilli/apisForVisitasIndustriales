@@ -4,25 +4,22 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
-$con = conectarDb();
+
+// Establecer la conexión con la base de datos usando PDO
+$conexion = conectarDb();
 
 $data = json_decode(file_get_contents('php://input'));
-$tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
-$nombres = isset($data->nombres) ? $data->nombres : null;
-$apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
-$apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
-$correo = isset($data->correo) ? $data->correo : null;
-$contraseña = isset($data->contraseña) ? $data->contraseña : null;
 
+// Verificar el método de solicitud
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validar que los campos requeridos estén presentes en la solicitud y no estén vacíos
+    // Verificar si los campos requeridos no están vacíos
     if (
-        !empty($data->tipoUser) &&
-        !empty($data->nombres) &&
-        !empty($data->apellidoP) &&
-        !empty($data->apellidoM) &&
-        !empty($data->correo) &&
-        !empty($data->contraseña)
+        isset($data->tipoUser) && !empty($data->tipoUser) &&
+        isset($data->nombres) && !empty($data->nombres) &&
+        isset($data->apellidoP) && !empty($data->apellidoP) &&
+        isset($data->apellidoM) && !empty($data->apellidoM) &&
+        isset($data->correo) && !empty($data->correo) &&
+        isset($data->contraseña) && !empty($data->contraseña)
     ) {
         $tipoUser = $data->tipoUser;
         $nombres = $data->nombres;
@@ -31,29 +28,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $correo = $data->correo;
         $contraseña = $data->contraseña;
 
-        // Verificar si el correo ya está registrado
-        $result = mysqli_query($con, "SELECT * FROM `usuario` WHERE `correo` = '" . $correo . "'");
-        $nums = mysqli_num_rows($result);
+        // Preparar la consulta para verificar si el correo ya está registrado
+        $stmt = $conexion->prepare("SELECT * FROM `usuario` WHERE `correo` = :correo");
+        $stmt->bindParam(':correo', $correo);
+        $stmt->execute();
+        $nums = $stmt->rowCount();
 
         if ($nums > 0) {
+            http_response_code(400); // Bad Request
             echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
         } else {
-            // Insertar el nuevo registro
-            $sqlQuery = "INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) 
-             VALUES ('$tipoUser', '$nombres', '$apellidoP', '$apellidoM', '$correo', '$contraseña')";
+            // Preparar la consulta para insertar un nuevo registro
+            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) 
+                                        VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña)");
+            $stmt->bindParam(':tipoUser', $tipoUser);
+            $stmt->bindParam(':nombres', $nombres);
+            $stmt->bindParam(':apellidoP', $apellidoP);
+            $stmt->bindParam(':apellidoM', $apellidoM);
+            $stmt->bindParam(':correo', $correo);
+            $stmt->bindParam(':contraseña', $contraseña);
 
-            if ($con->query($sqlQuery) === TRUE) {
+            if ($stmt->execute()) {
                 http_response_code(200);
                 echo json_encode(array('isOk' => 'true', 'msj' => 'Registro exitoso'));
             } else {
-                http_response_code(500);
-                echo json_encode(array('isOk' => 'false', 'msj' => 'Error en la base de datos: ' . $con->error));
+                http_response_code(500); // Internal Server Error
+                echo json_encode(array('isOk' => 'false', 'msj' => 'Error en la base de datos: ' . $stmt->errorInfo()));
             }
         }
     } else {
         http_response_code(400); // Bad Request
         echo json_encode(array('isOk' => 'false', 'msj' => 'Faltan campos en la solicitud.'));
     }
-    mysqli_close($con);
 }
 ?>
