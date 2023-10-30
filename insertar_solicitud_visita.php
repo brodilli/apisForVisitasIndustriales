@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         http_response_code(400);
-        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios.'));
+        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios'));
     }
 } else {
     http_response_code(405);
