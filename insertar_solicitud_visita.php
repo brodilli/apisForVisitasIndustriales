@@ -6,6 +6,12 @@ header('Content-Type: application/json; charset=UTF-8');
 require 'conectar.php';
 $con = conectarDb();
 
+if ($con === false) {
+    http_response_code(500);
+    echo json_encode(array('isOk' => false, 'msj' => 'Error en la conexión a la base de datos'));
+    die();
+}
+
 $data = json_decode(file_get_contents('php://input'));
 
 $id_usuario = $data->id_usuario ?? null;
@@ -61,14 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
         } else {
             http_response_code(500);
-            echo json_encode(array('isOk' => false, 'msj' => $con->error));
+            echo json_encode(array('isOk' => false, 'msj' => 'Error al insertar datos: ' . $stmt->error));
         }
     } else {
         http_response_code(400);
-        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios.'));
+        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios'));
     }
 } else {
     http_response_code(405);
-    echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido.'));
+    echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido'));
 }
 ?>
