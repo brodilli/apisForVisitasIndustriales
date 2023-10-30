@@ -1,80 +1,67 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
-header('Content-Type: application/json; charset=UTF-8');
+header("Access-Control-Allow-Headers: access");
+header("Access-Control-Allow-Methods: POST");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 require 'conectar.php';
 $con = conectarDb();
 
-if ($con === false) {
-    http_response_code(500);
-    echo json_encode(array('isOk' => false, 'msj' => 'Error en la conexión a la base de datos'));
-    die();
-}
+// Obtiene los datos en formato JSON
+$data = json_decode(file_get_contents("php://input"));
 
-$data = json_decode(file_get_contents('php://input'));
+// Verifica que los campos necesarios estén presentes
+if (
+    isset($data->id_usuario, $data->id_carrera, $data->id_empresa, $data->semestre, $data->grupo, $data->objetivo, $data->fecha, $data->horaSalida, $data->horaLlegada, $data->num_alumnos, $data->num_alumnas, $data->asignatura, $data->acompanante)
+) {
+    // Obtén los valores del objeto JSON
+    $id_usuario = $data->id_usuario;
+    $id_carrera = $data->id_carrera;
+    $id_empresa = $data->id_empresa;
+    $semestre = $data->semestre;
+    $grupo = $data->grupo;
+    $objetivo = $data->objetivo;
+    $fecha = $data->fecha;
+    $horaSalida = $data->horaSalida;
+    $horaLlegada = $data->horaLlegada;
+    $num_alumnos = $data->num_alumnos;
+    $num_alumnas = $data->num_alumnas;
+    $asignatura = $data->asignatura;
+    $acompanante = $data->acompanante;
 
-$id_usuario = $data->id_usuario ?? null;
-$id_carrera = $data->id_carrera ?? null;
-$id_empresa = $data->id_empresa ?? null;
-$semestre = $data->semestre ?? null;
-$grupo = $data->grupo ?? null;
-$objetivo = $data->objetivo ?? null;
-$fecha = $data->fecha ?? null;
-$horaSalida = $data->horaSalida ?? null;
-$horaLlegada = $data->horaLlegada ?? null;
-$num_alumnos = $data->num_alumnos ?? null;
-$num_alumnas = $data->num_alumnas ?? null;
-$asignatura = $data->asignatura ?? null;
-$acompanante = $data->acompanante ?? null;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (
-        $id_usuario !== null &&
-        $id_carrera !== null &&
-        $id_empresa !== null &&
-        $semestre !== null &&
-        $grupo !== null &&
-        $objetivo !== null &&
-        $fecha !== null &&
-        $horaSalida !== null &&
-        $horaLlegada !== null &&
-        $num_alumnos !== null &&
-        $num_alumnas !== null &&
-        $asignatura !== null &&
-        $acompanante !== null
-    ) {
-        $sqlQuery = "INSERT INTO `solicitud_visita`(`id_usuario`, `id_carrera`, `id_empresa`, `semestre`, `grupo`, `objetivo`, `fecha`, `horaSalida`, `horaLlegada`, `num_alumnos`, `num_alumnas`, `asignatura`, `acompanante`)
-                    VALUES (:id_usuario, :id_carrera, :id_empresa, :semestre, :grupo, :objetivo, :fecha, :horaSalida, :horaLlegada, :num_alumnos, :num_alumnas, :asignatura, :acompanante)";
-                
+    try {
+        // Consulta para contar el número de solicitudes existentes
+        $sqlQuery = "SELECT COUNT(*) AS total FROM solicitud_visita WHERE id_usuario = ? AND semestre = ? AND grupo = ? AND id_carrera = ? AND asignatura = ?";
         $stmt = $con->prepare($sqlQuery);
-        $stmt->bindParam(':id_usuario', $id_usuario);
-        $stmt->bindParam(':id_carrera', $id_carrera);
-        $stmt->bindParam(':id_empresa', $id_empresa);
-        $stmt->bindParam(':semestre', $semestre);
-        $stmt->bindParam(':grupo', $grupo);
-        $stmt->bindParam(':objetivo', $objetivo);
-        $stmt->bindParam(':fecha', $fecha);
-        $stmt->bindParam(':horaSalida', $horaSalida);
-        $stmt->bindParam(':horaLlegada', $horaLlegada);
-        $stmt->bindParam(':num_alumnos', $num_alumnos);
-        $stmt->bindParam(':num_alumnas', $num_alumnas);
-        $stmt->bindParam(':asignatura', $asignatura);
-        $stmt->bindParam(':acompanante', $acompanante);
+        $stmt->execute([$id_usuario, $semestre, $grupo, $id_carrera, $asignatura]);
+        $totalSolicitudes = $stmt->fetchColumn();
 
-        if ($stmt->execute()) {
-            http_response_code(200);
-            echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
+        if ($totalSolicitudes <= 4) {
+            // Preparar la consulta para insertar una nueva solicitud
+            $insertQuery = "INSERT INTO solicitud_visita (id_usuario, id_carrera, id_empresa, semestre, grupo, objetivo, fecha, horaSalida, horaLlegada, num_alumnos, num_alumnas, asignatura, acompanante) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $con->prepare($insertQuery);
+
+            // Ejecutar la consulta de inserción
+            $success = $stmt->execute([$id_usuario, $id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $acompanante]);
+
+            if ($success) {
+                http_response_code(200);
+                echo json_encode(['isOk' => true, 'msj' => 'Registro exitoso']);
+            } else {
+                echo json_encode(['isOk' => false, 'msj' => 'Error al insertar la solicitud']);
+            }
         } else {
-            http_response_code(500);
-            echo json_encode(array('isOk' => false, 'msj' => 'Error al insertar datos: ' . $stmt->error));
+            http_response_code(406);
+            echo json_encode('Excedido el límite de solicitudes');
         }
-    } else {
-        http_response_code(400);
-        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros obligatorios'));
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
     }
 } else {
-    http_response_code(405);
-    echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido'));
+    http_response_code(400);
+    echo json_encode(['error' => 'Datos insuficientes']);
 }
 ?>
