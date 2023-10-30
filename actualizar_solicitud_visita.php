@@ -1,71 +1,76 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Access-Control-Allow-Methods: POST');
 header('Content-Type: application/json; charset=UTF-8');
 
-require 'conectar.php'; // Asegúrate de que conectar.php establezca la conexión PDO correctamente
+require 'conectar.php';
 
+// Conectar a la base de datos
+$con = conectarDb();
+
+// Obtener datos de la solicitud POST
+$data = json_decode(file_get_contents("php://input"));
+
+// Verificar si es una solicitud POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    try {
-        $data = json_decode(file_get_contents("php://input"));
+    $id_visita = $data->id_visita ?? null;
+    $id_carrera = $data->id_carrera ?? null;
+    $id_empresa = $data->id_empresa ?? null;
+    $semestre = $data->semestre ?? null;
+    $grupo = $data->grupo ?? null;
+    $objetivo = $data->objetivo ?? null;
+    $fecha = $data->fecha ?? null;
+    $horaSalida = $data->horaSalida ?? null;
+    $horaLlegada = $data->horaLlegada ?? null;
+    $num_alumnos = $data->num_alumnos ?? null;
+    $num_alumnas = $data->num_alumnas ?? null;
+    $asignatura = $data->asignatura ?? null;
+    $estatus = $data->estatus ?? null;
+    $comentarios = $data->comentarios ?? null;
 
-        $id_visita = $data->id_visita;
-        $id_carrera = $data->id_carrera;
-        $id_empresa = $data->id_empresa;
-        $semestre = $data->semestre;
-        $grupo = $data->grupo;
-        $objetivo = $data->objetivo;
-        $fecha = $data->fecha;
-        $horaSalida = $data->horaSalida;
-        $horaLlegada = $data->horaLlegada;
-        $num_alumnos = $data->num_alumnos;
-        $num_alumnas = $data->num_alumnas;
-        $asignatura = $data->asignatura;
-        $estatus = $data->estatus;
-        $comentarios = $data->comentarios;
+    if (
+        $id_visita && $id_carrera && $id_empresa && $semestre && $grupo &&
+        $objetivo && $fecha && $horaSalida && $horaLlegada && $num_alumnos &&
+        $num_alumnas && $asignatura && $estatus && $comentarios
+    ) {
+        // Prepared statement para evitar inyección SQL
+        $sqlQuery = $con->prepare("UPDATE solicitud_visita SET 
+            id_carrera = ?,
+            id_empresa = ?,
+            semestre = ?,
+            grupo = ?,
+            objetivo = ?,
+            fecha = ?,
+            horaSalida = ?,
+            horaLlegada = ?,
+            num_alumnos = ?,
+            num_alumnas = ?,
+            asignatura = ?,
+            estatus = ?,
+            comentarios = ?
+            WHERE id_visita = ?");
 
-        // Consulta SQL preparada para actualizar los datos
-        $sqlQuery = "UPDATE solicitud_visita SET 
-            id_carrera = :id_carrera, 
-            id_empresa = :id_empresa,
-            semestre = :semestre, 
-            grupo = :grupo,
-            objetivo = :objetivo, 
-            fecha = :fecha, 
-            horaSalida = :horaSalida, 
-            horaLlegada = :horaLlegada, 
-            num_alumnos = :num_alumnos,
-            num_alumnas = :num_alumnas, 
-            asignatura = :asignatura,
-            estatus = :estatus,
-            comentarios = :comentarios
-            WHERE id_visita = :id_visita";
+        $sqlQuery->bind_param('iiissssssssssi', $id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $estatus, $comentarios, $id_visita);
+        $sqlQuery->execute();
 
-        $stmt = $con->prepare($sqlQuery);
-        $stmt->bindParam(':id_carrera', $id_carrera);
-        $stmt->bindParam(':id_empresa', $id_empresa);
-        $stmt->bindParam(':semestre', $semestre);
-        $stmt->bindParam(':grupo', $grupo);
-        $stmt->bindParam(':objetivo', $objetivo);
-        $stmt->bindParam(':fecha', $fecha);
-        $stmt->bindParam(':horaSalida', $horaSalida);
-        $stmt->bindParam(':horaLlegada', $horaLlegada);
-        $stmt->bindParam(':num_alumnos', $num_alumnos);
-        $stmt->bindParam(':num_alumnas', $num_alumnas);
-        $stmt->bindParam(':asignatura', $asignatura);
-        $stmt->bindParam(':estatus', $estatus);
-        $stmt->bindParam(':comentarios', $comentarios);
-        $stmt->bindParam(':id_visita', $id_visita);
-
-        if ($stmt->execute()) {
+        if ($sqlQuery->affected_rows > 0) {
             http_response_code(200);
-            echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
+            echo json_encode(array('isOk' => true, 'msj' => 'Registro actualizado exitosamente'));
         } else {
-            throw new Exception("Error en la consulta");
+            http_response_code(400);
+            echo json_encode(array('isOk' => false, 'msj' => 'No se pudo actualizar el registro'));
         }
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(array('isOk' => false, 'msj' => 'Error en la solicitud: ' . $e->getMessage()));
+
+        // Cerrar la consulta y la conexión
+        $sqlQuery->close();
+        mysqli_close($con);
+    } else {
+        http_response_code(400);
+        echo json_encode(array('isOk' => false, 'msj' => 'Datos insuficientes o inválidos'));
     }
+} else {
+    http_response_code(405);
+    echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido'));
 }
 ?>
