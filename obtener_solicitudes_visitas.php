@@ -1,46 +1,39 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Headers: Content-Type, Origin, X-Requested-With, Authorization');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json; charset=utf-8');
+header("Content-Type: application/json; charset=utf-8");
 
-include 'conectar.php';
+include "conectar.php"; // Asegúrate de incluir el archivo de conexión apropiado
 
-function obtenerEmpresas() {
-    $conexion = conectarDB();
-
-    $sql = 'SELECT * FROM empresa ORDER BY id_empresa ASC';
-
-    $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
+function obtenerSolicitudes() {
     try {
-        $stmt = $conexion->prepare($sql);
+        $pdo = conectarDb(); // Conexión a la base de datos usando PDO
+
+        $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
+        usuario.apellidoM, usuario.id_usuario, solicitud_visita.fecha, solicitud_visita.horaSalida, solicitud_visita.horaLlegada, solicitud_visita.estatus, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
+        solicitud_visita.semestre, solicitud_visita.num_alumnos, solicitud_visita.id_carrera, solicitud_visita.num_alumnas, solicitud_visita.comentarios, carrera.nombre_carrera 
+        FROM solicitud_visita 
+        INNER JOIN empresa ON solicitud_visita.id_empresa = empresa.id_empresa 
+        INNER JOIN usuario ON solicitud_visita.id_usuario = usuario.id_usuario 
+        INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera";
+
+        $stmt = $pdo->prepare($sql);
         $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $stmt->fetchAll();
+        // Cerrar la conexión y devolver los resultados
+        $pdo = null;
+        return $result;
     } catch (PDOException $e) {
-        return array('error' => 'Error en la consulta SQL: ' . $e->getMessage());
-    } finally {
-        $conexion = null; // Cerramos la conexión
+        // Manejo de errores
+        http_response_code(500); // Error interno del servidor
+        echo json_encode(["error" => "Hubo un problema al procesar la solicitud."]);
+        exit();
     }
 }
 
-$data = json_decode(file_get_contents("php://input"));
-$rango = $data->rango;
+// Llamada a la función para obtener los datos
+$solicitudes = obtenerSolicitudes();
 
-try {
-    $empresas = obtenerEmpresas();
-    
-    if (is_array($empresas)) {
-        http_response_code(200); // Éxito, código 200
-        echo json_encode(array('status' => 200, 'data' => $empresas));
-    } else {
-        http_response_code(500); // Error del servidor, código 500
-        echo json_encode(array('status' => 500, 'error' => $empresas['error']));
-    }
-} catch (Exception $e) {
-    http_response_code(500); // Error del servidor, código 500
-    echo json_encode(array('status' => 500, 'error' => $e->getMessage()));
-}
+// Devolver los datos como JSON
+echo json_encode($solicitudes);
 ?>
