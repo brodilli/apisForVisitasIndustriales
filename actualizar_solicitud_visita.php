@@ -5,58 +5,69 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-require 'conectar.php';
-$con = conectarDb();
+try {
+    $servidor = "localhost";
+    $usuario = "visitas";
+    $password = "Myp@ssw0";
+    $bd = "visitas_industriales";
 
-$data = json_decode(file_get_contents("php://input"));
+    $dsn = "mysql:host=$servidor;dbname=$bd;charset=utf8mb4";
+    $opciones = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    try {
-        $requiredFields = ['id_visita', 'id_carrera', 'id_empresa', 'semestre', 'grupo', 'objetivo', 'fecha', 'horaSalida', 'horaLlegada', 'num_alumnos', 'num_alumnas', 'asignatura', 'estatus', 'comentarios'];
+    $pdo = new PDO($dsn, $usuario, $password, $opciones);
 
-        foreach ($requiredFields as $field) {
-            if (!property_exists($data, $field)) {
-                throw new Exception("El campo '$field' es obligatorio.");
-            }
-        }
+    $data = json_decode(file_get_contents("php://input"));
 
-        // Utiliza consultas preparadas para prevenir inyección SQL
-        $sqlQuery = $con->prepare("UPDATE solicitud_visita SET 
-            id_carrera = ?,
-            id_empresa = ?,
-            semestre = ?,
-            grupo = ?,
-            objetivo = ?,
-            fecha = ?,
-            horaSalida = ?,
-            horaLlegada = ?,
-            num_alumnos = ?,
-            num_alumnas = ?,
-            asignatura = ?,
-            estatus = ?,
-            comentarios = ?
-            WHERE id_visita = ?");
+    $id_visita = $data->id_visita;
+    $id_carrera = $data->id_carrera;
+    $id_empresa = $data->id_empresa;
+    $semestre = $data->semestre;
+    $grupo = $data->grupo;
+    $objetivo = $data->objetivo;
+    $fecha = $data->fecha;
+    $horaSalida = $data->horaSalida;
+    $horaLlegada = $data->horaLlegada;
+    $num_alumnos = $data->num_alumnos;
+    $num_alumnas = $data->num_alumnas;
+    $asignatura = $data->asignatura;
+    $estatus = $data->estatus;
+    $comentarios = $data->comentarios;
 
-        $sqlQuery->bind_param('iiissssssssssi', $data->id_carrera, $data->id_empresa, $data->semestre, $data->grupo, $data->objetivo, $data->fecha, $data->horaSalida, $data->horaLlegada, $data->num_alumnos, $data->num_alumnas, $data->asignatura, $data->estatus, $data->comentarios, $data->id_visita);
-        $sqlQuery->execute();
+    $sql = "UPDATE solicitud_visita SET 
+                id_carrera = ?,
+                id_empresa = ?,
+                semestre = ?,
+                grupo = ?,
+                objetivo = ?,
+                fecha = ?,
+                horaSalida = ?,
+                horaLlegada = ?,
+                num_alumnos = ?,
+                num_alumnas = ?,
+                asignatura = ?,
+                estatus = ?,
+                comentarios = ?
+                WHERE id_visita = ?";
 
-        if ($sqlQuery->affected_rows > 0) {
-            http_response_code(200);
-            echo json_encode(['isOk' => true, 'msj' => 'Registro actualizado exitosamente']);
-        } else {
-            http_response_code(400);
-            echo json_encode(['isOk' => false, 'msj' => 'No se pudo actualizar el registro']);
-        }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $estatus, $comentarios, $id_visita]);
 
-        $sqlQuery->close();
-        mysqli_close($con);
-    } catch (Exception $e) {
-        http_response_code(500);
-        echo json_encode(['isOk' => false, 'msj' => $e->getMessage()]);
+    $rowCount = $stmt->rowCount();
+
+    if ($rowCount > 0) {
+        http_response_code(200);
+        echo json_encode(['isOk' => true, 'msj' => 'Registro actualizado exitosamente']);
+    } else {
+        http_response_code(400);
+        echo json_encode(['isOk' => false, 'msj' => 'No se pudo actualizar el registro']);
     }
-} else {
-    http_response_code(405);
-    echo json_encode(['isOk' => false, 'msj' => 'Método no permitido']);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode(['isOk' => false, 'msj' => 'Error interno del servidor: ' . $e->getMessage()]);
 }
-?>
