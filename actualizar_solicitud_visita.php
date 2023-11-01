@@ -73,4 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     http_response_code(405);
     echo json_encode(array('isOk' => false, 'msj' => 'Método no permitido'));
 }
+
+// Manejo de error 500 si ocurre un error en el servidor
+if (!empty($con->error)) {
+    http_response_code(500);
+    echo json_encode(array('isOk' => false, 'msj' => 'Error interno del servidor'));
+}
 ?>
