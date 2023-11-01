@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($data) && allRequiredFieldsExist($data, $requiredFields)) {
         try {
-            $con = conectarDbPDO();
+            $con = conectarDb();
 
             $sql = "UPDATE solicitud_visita SET 
                 id_carrera = :id_carrera,
