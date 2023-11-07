@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'msj' => 'Registro editado de forma exitosa.',
                     'nombres' => $datos['nombres'],
                     'id_usuario' => $id_usuario,
-                    'tipoUser' => $datos['tipoUser']
+                    'numSesion' => $datos['numSesion']
                 ));            
             } else {
                 http_response_code(500);
