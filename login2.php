@@ -27,8 +27,7 @@ if ($data !== null && isset($data->correo) && isset($data->contraseña)) {
                 echo json_encode($response);
             } else {
                 http_response_code(404);
-                $response = array("data" => $rs, "Status" => "404");
-                echo json_encode($response);
+                echo json_encode(array("error" => $e->getMessage(), "Status" => "404"));
             }
         } else {
             http_response_code(500);
