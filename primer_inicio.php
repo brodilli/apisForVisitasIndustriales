@@ -13,7 +13,7 @@ $contraseña = isset($dataObject->contraseña) ? $dataObject->contraseña : null
 $numTelefono = isset($dataObject->numTelefono) ? $dataObject->numTelefono : null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($id_usuario !== null) {
+    if ($id_usuario !== null && $contraseña !== null && $numTelefono !== null) {
         try {
             $actualizacion = "UPDATE `usuario` SET `contraseña` = :contraseña, `numTelefono` = :numTelefono WHERE `id_usuario` = :id_usuario";
 
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $e->getMessage()));
         }
     } else {
-        echo json_encode(array('isOk' => false, 'msj' => 'Falta el parámetro id_usuario en la solicitud.'));
+        echo json_encode(array('isOk' => false, 'msj' => 'Faltan parámetros en la solicitud.'));
     }
 } else {
     echo json_encode(array('isOk' => false, 'msj' => 'Método de solicitud no permitido.'));
