@@ -8,19 +8,19 @@ require 'conectar.php';
 $conexion = conectarDb();
 $dataObject = json_decode(file_get_contents("php://input"));
 
-$id_usuario = isset($dataObject->id_usuario) ? $dataObject->id_usuario : null;
-$contraseña = isset($dataObject->contraseña) ? $dataObject->contraseña : null;
-$numTelefono = isset($dataObject->numTelefono) ? $dataObject->numTelefono : null;
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($id_usuario !== null && $contraseña !== null && $numTelefono !== null) {
+    if (isset($dataObject->id_usuario, $dataObject->contraseña, $dataObject->numTelefono)) {
+        $id_usuario = $dataObject->id_usuario;
+        $contraseña = $dataObject->contraseña;
+        $numTelefono = $dataObject->numTelefono;
+
         try {
-            $actualizacion = "UPDATE `usuario` SET `contraseña` = :contraseña, `numTelefono` = :numTelefono WHERE `id_usuario` = :id_usuario";
+            $actualizacion = "UPDATE `usuario` SET `contraseña` = :contrasena, `numTelefono` = :telefono WHERE `id_usuario` = :id";
 
             $stmt = $conexion->prepare($actualizacion);
-            $stmt->bindParam(':contraseña', $contraseña, PDO::PARAM_STR);
-            $stmt->bindParam(':numTelefono', $numTelefono, PDO::PARAM_STR);
-            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+            $stmt->bindParam(':contrasena', $contraseña, PDO::PARAM_STR);
+            $stmt->bindParam(':telefono', $numTelefono, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id_usuario, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 echo json_encode(array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.'));
