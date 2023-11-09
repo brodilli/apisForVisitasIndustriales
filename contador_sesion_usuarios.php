@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'nombres' => $datos['nombres'],
                     'id_usuario' => $id_usuario,
                     'numSesion' => $numSesion,
+                    'tipoUser' => $datos['tipoUser']
                 ));            
             } else {
                 http_response_code(500);
