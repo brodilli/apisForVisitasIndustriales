@@ -6,10 +6,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 $data = json_decode(file_get_contents("php://input"));
 $id_visita = $_GET['id_visita'];
-$rango = $_GET['rango']; // Agregar el parámetro rango
-
-// Obtener el mes actual
-$mes_actual = date('n');
 
 $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
         usuario.apellidoM, solicitud_visita.fecha, solicitud_visita.horaSalida, solicitud_visita.horaLlegada, solicitud_visita.estatus, 
@@ -21,22 +17,6 @@ $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar
         INNER JOIN usuario ON solicitud_visita.id_usuario = usuario.id_usuario 
         INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera
         WHERE solicitud_visita.id_visita = :id_visita";
-
-// Ajustar la consulta según el valor de la variable de rango
-if ($rango == 1) {
-    if ($mes_actual >= 1 && $mes_actual <= 7) {
-        $sql .= " AND MONTH(solicitud_visita.fecha) >= 1 AND MONTH(solicitud_visita.fecha) <= 7";
-    } else {
-        $sql .= " AND MONTH(solicitud_visita.fecha) >= 8 AND MONTH(solicitud_visita.fecha) <= 12";
-    }
-} elseif ($rango == 2) {
-    // No se aplica restricción en el rango 2
-} else {
-    // Manejar caso incorrecto de la variable de rango
-    http_response_code(400);
-    echo json_encode(array('error' => 'El valor de la variable de rango no es válido.'));
-    exit();
-}
 
 include "conectar.php";
 
