@@ -22,10 +22,16 @@ function actualizarUsuario($conexion, $dataObject) {
             $stmt = $conexion->prepare("UPDATE `usuario` SET 
                 `nombres`=?, `tipoUser`=?, `apellidoP`=?, `apellidoM`=?, `correo`=?, `contraseña`=?
                 WHERE id_usuario = ?");
-            $stmt->bind_param("ssssssi", $nombres, $tipoUser, $apellidoP, $apellidoM, $correo, $contraseña, $id_usuario);
+            $stmt->bindValue(1, $nombres);
+            $stmt->bindValue(2, $tipoUser);
+            $stmt->bindValue(3, $apellidoP);
+            $stmt->bindValue(4, $apellidoM);
+            $stmt->bindValue(5, $correo);
+            $stmt->bindValue(6, $contraseña);
+            $stmt->bindValue(7, $id_usuario);
             $stmt->execute();
 
-            if ($stmt->affected_rows > 0) {
+            if ($stmt->rowCount() > 0) {
                 return array('isOk' => true, 'msj' => 'Registro editado de forma exitosa.');
             } else {
                 return array('isOk' => false, 'msj' => 'No se realizó ninguna edición en el registro.');
