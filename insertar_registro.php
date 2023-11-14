@@ -52,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':apellidoM', $apellidoM);
             $stmt->bindParam(':correo', $correo);
             $stmt->bindParam(':contraseña', $contraseña);
-
+            $stmt->bindParam(':numSesion', 0);
+            $stmt->bindParam(':departamento', '');
+            $stmt->bindParam(':numTelefono', '');
             
             $debugInfo = $stmt->debugDumpParams();
 var_dump($debugInfo);
