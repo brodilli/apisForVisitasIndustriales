@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $apellidoM = $data->apellidoM;
         $correo = $data->correo;
         $contraseña = $data->contraseña;
-        $numSesion = 0;
 
         // Preparar la consulta para verificar si el correo ya está registrado
         $stmt = $conexion->prepare("SELECT * FROM `usuario` WHERE `correo` = :correo");
