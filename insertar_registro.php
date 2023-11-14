@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             // Preparar la consulta para insertar un nuevo registro
             $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`) 
-                                        VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, :numSesion)");
+                            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0)");
             $stmt->bindParam(':tipoUser', $tipoUser);
             $stmt->bindParam(':nombres', $nombres);
             $stmt->bindParam(':apellidoP', $apellidoP);
