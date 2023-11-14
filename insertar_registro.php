@@ -52,6 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindParam(':contraseña', $contraseña);
             $stmt->bindParam(':numSesion', $numSesion);
 
+            
+            $debugInfo = $stmt->debugDumpParams();
+var_dump($debugInfo);
+
             if ($stmt->execute()) {
                 http_response_code(200);
                 echo json_encode(array('isOk' => 'true', 'msj' => 'Registro exitoso'));
