@@ -46,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // "numSesion":0
             // ...
 
+           // ...
+
             // Preparar la consulta para insertar un nuevo registro
             $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`)
             VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
@@ -56,11 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bindValue(':apellidoM', $apellidoM);
             $stmt->bindValue(':correo', $correo);
             $stmt->bindValue(':contraseña', $contraseña);
-
-            // Los valores fijos no necesitan ser variables
-            $stmt->bindValue(':numSesion', 0);
-            $stmt->bindValue(':departamento', '');
-            $stmt->bindValue(':numTelefono', '');
 
             $debugInfo = $stmt->debugDumpParams();
             var_dump($debugInfo);
