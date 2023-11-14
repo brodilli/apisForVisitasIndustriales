@@ -55,7 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo json_encode(array('isOk' => 'true', 'msj' => 'Registro exitoso'));
             } else {
                 http_response_code(500); // Internal Server Error
-                echo json_encode(array('isOk' => 'false', 'msj' => 'Error en la base de datos: ' . $stmt->errorInfo()));
+                $errorInfo = $stmt->errorInfo();
+                echo json_encode(array('isOk' => 'false', 'msj' => 'Error en la base de datos: ' . implode(" ", $errorInfo)));
             }
         }
     } else {
