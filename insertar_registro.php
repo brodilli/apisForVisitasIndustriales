@@ -40,9 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             http_response_code(400); // Bad Request
             echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
         } else {
-            // Preparar la consulta para insertar un nuevo registro
-            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`) 
-                            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0)");
+            // Preparar la consulta para insertar un nuevo registro 
+            // "departamento":"",
+            // "numTelefono":"",
+            // "numSesion":0
+            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`) 
+                            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
             $stmt->bindParam(':tipoUser', $tipoUser);
             $stmt->bindParam(':nombres', $nombres);
             $stmt->bindParam(':apellidoP', $apellidoP);
