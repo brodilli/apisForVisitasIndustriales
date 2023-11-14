@@ -44,20 +44,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // "departamento":"",
             // "numTelefono":"",
             // "numSesion":0
-            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`) 
-                            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
-            $stmt->bindParam(':tipoUser', $tipoUser);
-            $stmt->bindParam(':nombres', $nombres);
-            $stmt->bindParam(':apellidoP', $apellidoP);
-            $stmt->bindParam(':apellidoM', $apellidoM);
-            $stmt->bindParam(':correo', $correo);
-            $stmt->bindParam(':contraseña', $contraseña);
-            $stmt->bindParam(':numSesion', 0);
-            $stmt->bindParam(':departamento', '');
-            $stmt->bindParam(':numTelefono', '');
-            
+            // ...
+
+            // Preparar la consulta para insertar un nuevo registro
+            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`)
+            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
+
+            $stmt->bindValue(':tipoUser', $tipoUser);
+            $stmt->bindValue(':nombres', $nombres);
+            $stmt->bindValue(':apellidoP', $apellidoP);
+            $stmt->bindValue(':apellidoM', $apellidoM);
+            $stmt->bindValue(':correo', $correo);
+            $stmt->bindValue(':contraseña', $contraseña);
+
+            // Los valores fijos no necesitan ser variables
+            $stmt->bindValue(':numSesion', 0);
+            $stmt->bindValue(':departamento', '');
+            $stmt->bindValue(':numTelefono', '');
+
             $debugInfo = $stmt->debugDumpParams();
-var_dump($debugInfo);
+            var_dump($debugInfo);
+
+            // ...
+
 
             if ($stmt->execute()) {
                 http_response_code(200);
