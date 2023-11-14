@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $apellidoM = $data->apellidoM;
         $correo = $data->correo;
         $contraseña = $data->contraseña;
+        $numSesion = 0;
 
         // Preparar la consulta para verificar si el correo ya está registrado
         $stmt = $conexion->prepare("SELECT * FROM `usuario` WHERE `correo` = :correo");
@@ -41,14 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
         } else {
             // Preparar la consulta para insertar un nuevo registro
-            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) 
-                                        VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña)");
+            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`) 
+                                        VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, :numSesion)");
             $stmt->bindParam(':tipoUser', $tipoUser);
             $stmt->bindParam(':nombres', $nombres);
             $stmt->bindParam(':apellidoP', $apellidoP);
             $stmt->bindParam(':apellidoM', $apellidoM);
             $stmt->bindParam(':correo', $correo);
             $stmt->bindParam(':contraseña', $contraseña);
+            $stmt->bindParam(':numSesion', $numSesion);
 
             if ($stmt->execute()) {
                 http_response_code(200);
