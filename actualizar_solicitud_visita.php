@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST, DELETE");
+header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -22,42 +22,50 @@ try {
 
     $pdo = new PDO($dsn, $usuario, $password, $opciones);
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Código existente para la actualización
-        $data = json_decode(file_get_contents("php://input"));
-        
-        // ... (resto del código)
+    $data = json_decode(file_get_contents("php://input"));
 
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $estatus, $comentarios, $id_visita]);
+    $id_visita = $data->id_visita;
+    $id_carrera = $data->id_carrera;
+    $id_empresa = $data->id_empresa;
+    $semestre = $data->semestre;
+    $grupo = $data->grupo;
+    $objetivo = $data->objetivo;
+    $fecha = $data->fecha;
+    $horaSalida = $data->horaSalida;
+    $horaLlegada = $data->horaLlegada;
+    $num_alumnos = $data->num_alumnos;
+    $num_alumnas = $data->num_alumnas;
+    $asignatura = $data->asignatura;
+    $estatus = $data->estatus;
+    $comentarios = $data->comentarios;
 
-        $rowCount = $stmt->rowCount();
+    $sql = "UPDATE solicitud_visita SET 
+                id_carrera = ?,
+                id_empresa = ?,
+                semestre = ?,
+                grupo = ?,
+                objetivo = ?,
+                fecha = ?,
+                horaSalida = ?,
+                horaLlegada = ?,
+                num_alumnos = ?,
+                num_alumnas = ?,
+                asignatura = ?,
+                estatus = ?,
+                comentarios = ?
+                WHERE id_visita = ?";
 
-        if ($rowCount > 0) {
-            http_response_code(200);
-            echo json_encode(['isOk' => true, 'msj' => 'Registro actualizado exitosamente']);
-        } else {
-            http_response_code(400);
-            echo json_encode(['isOk' => false, 'msj' => 'No se pudo actualizar el registro']);
-        }
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        // Nueva sección para la eliminación
-        $data = json_decode(file_get_contents("php://input"));
-        $id_visita = $data->id_visita;
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $estatus, $comentarios, $id_visita]);
 
-        $sql = "DELETE FROM solicitud_visita WHERE id_visita = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$id_visita]);
+    $rowCount = $stmt->rowCount();
 
-        $rowCount = $stmt->rowCount();
-
-        if ($rowCount > 0) {
-            http_response_code(200);
-            echo json_encode(['isOk' => true, 'msj' => 'Registro eliminado exitosamente']);
-        } else {
-            http_response_code(400);
-            echo json_encode(['isOk' => false, 'msj' => 'No se pudo eliminar el registro']);
-        }
+    if ($rowCount > 0) {
+        http_response_code(200);
+        echo json_encode(['isOk' => true, 'msj' => 'Registro actualizado exitosamente']);
+    } else {
+        http_response_code(400);
+        echo json_encode(['isOk' => false, 'msj' => 'No se pudo actualizar el registro']);
     }
 } catch (PDOException $e) {
     http_response_code(500);
