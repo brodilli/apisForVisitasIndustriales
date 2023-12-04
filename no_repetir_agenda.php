@@ -10,6 +10,7 @@ $data = json_decode(file_get_contents("php://input"));
 $id_visita = $data -> id_visita;
 
 
+
 $sql= "SELECT COUNT(*) AS count FROM `agenda` WHERE id_visita = '$id_visita'";
 include "conectar.php";
 
@@ -28,7 +29,7 @@ function desconectar($conexion){
 }
 
 function obtenerArreglo($sql){
-    $conexion = conectarDB();
+    $conexion = conectarDb();
 
     mysqli_set_charset($conexion, "utf8");
 
