@@ -7,7 +7,7 @@ header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
 
-$conexion = conectarDb();
+$conexion = conectarDB();
 
 $data = json_decode(file_get_contents('php://input'));
 
