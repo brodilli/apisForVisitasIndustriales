@@ -36,15 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             http_response_code(400);
             echo json_encode(array('isOk' => 'existe', 'msj' => 'Correo ya registrado'));
         } else {
-            $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`)
-            VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
+            // $stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`)
+            // VALUES (:tipoUser, :nombres, :apellidoP, :apellidoM, :correo, :contraseña, 0, '', '')");
 
-            $stmt->bindValue(':tipoUser', $tipoUser);
-            $stmt->bindValue(':nombres', $nombres);
-            $stmt->bindValue(':apellidoP', $apellidoP);
-            $stmt->bindValue(':apellidoM', $apellidoM);
-            $stmt->bindValue(':correo', $correo);
-            $stmt->bindValue(':contraseña', $contraseña);
+$stmt = $conexion->prepare("INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`, `numSesion`, `departamento`, `numTelefono`)
+VALUES (?, ?, ?, ?, ?, ?, 0, '', '')");
+
+$stmt->bindValue(1, $tipoUser);
+$stmt->bindValue(2, $nombres);
+$stmt->bindValue(3, $apellidoP);
+$stmt->bindValue(4, $apellidoM);
+$stmt->bindValue(5, $correo);
+$stmt->bindValue(6, $contraseña);
+
 
             if ($stmt->execute()) {
                 http_response_code(200);
