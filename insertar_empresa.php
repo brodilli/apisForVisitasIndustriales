@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
-$con = conectarDb();
+$con = conectarDB();
 
 if (!$con) {
     http_response_code(500);
@@ -16,24 +16,22 @@ if (!$con) {
 
 $data = json_decode(file_get_contents('php://input'));
 
-$tipoUser = isset($data->tipoUser) ? $data->tipoUser : null;
-$nombres = isset($data->nombres) ? $data->nombres : null;
-$apellidoP = isset($data->apellidoP) ? $data->apellidoP : null;
-$apellidoM = isset($data->apellidoM) ? $data->apellidoM : null;
-$correo = isset($data->correo) ? $data->correo : null;
-$contraseña = isset($data->contraseña) ? $data->contraseña : null;
+$nombre_empresa = isset($data->nombre_empresa) ? $data->nombre_empresa : null;
+$lugar = isset($data->lugar) ? $data->lugar : null;
+$nombre_contacto = isset($data->nombre_contacto) ? $data->nombre_contacto : null;
+$correo_contacto = isset($data->correo_contacto) ? $data->correo_contacto : null;
+$telefono_contacto = isset($data->telefono_contacto) ? $data->telefono_contacto : null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (
-        !empty($tipoUser) &&
-        !empty($nombres) &&
-        !empty($apellidoP) &&
-        !empty($apellidoM) &&
-        !empty($correo) &&
-        !empty($contraseña)
+        !empty($nombre_empresa) &&
+        !empty($lugar) &&
+        !empty($nombre_contacto) &&
+        !empty($correo_contacto) &&
+        !empty($telefono_contacto)
     ) {
-        $sqlQuery = "INSERT INTO `usuario` (`tipoUser`, `nombres`, `apellidoP`, `apellidoM`, `correo`, `contraseña`) 
-            VALUES ('$tipoUser', '$nombres', '$apellidoP', '$apellidoM', '$correo', '$contraseña')";
+        $sqlQuery = "INSERT INTO `empresa` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
+            VALUES ('$nombre_empresa', '$lugar', '$nombre_contacto', '$correo_contacto', '$telefono_contacto')";
 
         try {
             if ($con->query($sqlQuery) === TRUE) {
