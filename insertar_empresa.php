@@ -35,11 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Consulta preparada para evitar inyección SQL
         $sqlQuery = "INSERT INTO `tu_tabla` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
-            VALUES (?, ?, ?, ?, ?)";
+            VALUES (:nombre_empresa, :lugar, :nombre_contacto, :correo_contacto, :telefono_contacto)";
 
         try {
             $stmt = $con->prepare($sqlQuery);
-            $stmt->bind_param("sssss", $nombre_empresa, $lugar, $nombre_contacto, $correo_contacto, $telefono_contacto);
+            $stmt->bindParam(':nombre_empresa', $nombre_empresa);
+            $stmt->bindParam(':lugar', $lugar);
+            $stmt->bindParam(':nombre_contacto', $nombre_contacto);
+            $stmt->bindParam(':correo_contacto', $correo_contacto);
+            $stmt->bindParam(':telefono_contacto', $telefono_contacto);
+
             $stmt->execute();
 
             http_response_code(200);
