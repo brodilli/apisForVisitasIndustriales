@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
-$con = conectarDb();
+$con = conectarDB();
 
 if (!$con) {
     http_response_code(500);
