@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(400);
         echo json_encode(array('isOk' => false, 'msj' => 'Faltan campos en la solicitud.'));
     }
-
-    mysqli_close($con);
+    // No es necesario cerrar la conexión PDO
+    // mysqli_close($con);
 }
 ?>
