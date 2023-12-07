@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 header('Content-Type: application/json; charset=UTF-8');
 
 require 'conectar.php';
-$con = conectarDB();
+$con = conectarDb();
 
 if (!$con) {
     http_response_code(500);
@@ -30,18 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         !empty($correo_contacto) &&
         !empty($telefono_contacto)
     ) {
-        $sqlQuery = "INSERT INTO `empresa` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
-            VALUES ('$nombre_empresa', '$lugar', '$nombre_contacto', '$correo_contacto', '$telefono_contacto')";
+        // Log de datos recibidos
+        error_log('Received data: ' . print_r($data, true));
+
+        // Consulta preparada para evitar inyección SQL
+        $sqlQuery = "INSERT INTO `tu_tabla` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
+            VALUES (?, ?, ?, ?, ?)";
 
         try {
-            if ($con->query($sqlQuery) === TRUE) {
-                http_response_code(200);
-                echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
-            } else {
-                http_response_code(500);
-                echo json_encode(array('isOk' => false, 'msj' => 'Error en la base de datos: ' . $con->error));
-            }
+            $stmt = $con->prepare($sqlQuery);
+            $stmt->bind_param("sssss", $nombre_empresa, $lugar, $nombre_contacto, $correo_contacto, $telefono_contacto);
+            $stmt->execute();
+
+            http_response_code(200);
+            echo json_encode(array('isOk' => true, 'msj' => 'Registro exitoso'));
         } catch (Exception $e) {
+            // Log de errores
+            error_log('Error en el servidor: ' . $e->getMessage());
+
             http_response_code(500);
             echo json_encode(array('isOk' => false, 'msj' => 'Error en el servidor: ' . $e->getMessage()));
         }
@@ -49,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(400);
         echo json_encode(array('isOk' => false, 'msj' => 'Faltan campos en la solicitud.'));
     }
+
     mysqli_close($con);
 }
 ?>
