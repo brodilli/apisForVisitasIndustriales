@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         error_log('Received data: ' . print_r($data, true));
 
         // Consulta preparada para evitar inyección SQL
-        $sqlQuery = "INSERT INTO `tu_tabla` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
+        $sqlQuery = "INSERT INTO `empresa` (`nombre_empresa`, `lugar`, `nombre_contacto`, `correo_contacto`, `telefono_contacto`) 
             VALUES (:nombre_empresa, :lugar, :nombre_contacto, :correo_contacto, :telefono_contacto)";
 
         try {
