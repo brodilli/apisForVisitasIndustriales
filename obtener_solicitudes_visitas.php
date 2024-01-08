@@ -35,7 +35,7 @@ function obtenerSolicitudes($rango) {
         // Recuperar el valor de rango
         $rango = isset($data->rango) ? $data->rango : 2;
 
-        echo "Valor de \$rango: " . $rango . "<br>";
+        // echo "Valor de \$rango: " . $rango . "<br>";
 
         if ($rango == 1) {
             if ($mes_actual >= 1 && $mes_actual <= 7) {
@@ -44,11 +44,11 @@ function obtenerSolicitudes($rango) {
                 $sqlSemestre .= " MONTH(solicitud_visita.fecha_creacion) >= 8 AND MONTH(solicitud_visita.fecha_creacion) <= 12";
             }
 
-            echo "Consulta SQL con filtro de semestre: " . $sqlSemestre . "<br>";
+            // echo "Consulta SQL con filtro de semestre: " . $sqlSemestre . "<br>";
 
             $stmt = $pdo->prepare($sqlSemestre);
         } else {
-            echo "Consulta SQL general: " . $sqlGeneral . "<br>";
+            // echo "Consulta SQL general: " . $sqlGeneral . "<br>";
 
             $stmt = $pdo->prepare($sqlGeneral);
         }
