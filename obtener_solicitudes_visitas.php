@@ -23,12 +23,15 @@ function obtenerSolicitudes($rango) {
 
         // Ajustar la consulta según el valor de la variable de rango
         if ($rango == 1) {
+            $sql .= " WHERE"; // Agrega la cláusula WHERE si no está presente en la consulta
             if ($mes_actual >= 1 && $mes_actual <= 7) {
-                $sql .= " WHERE MONTH(solicitud_visita.fecha_creacion) >= 1 AND MONTH(solicitud_visita.fecha_creacion) <= 7";
+                $sql .= " MONTH(solicitud_visita.fecha_creacion) >= 1 AND MONTH(solicitud_visita.fecha_creacion) <= 7";
             } else {
-                $sql .= " WHERE MONTH(solicitud_visita.fecha_creacion) >= 8 AND MONTH(solicitud_visita.fecha_creacion) <= 12";
+                $sql .= " MONTH(solicitud_visita.fecha_creacion) >= 8 AND MONTH(solicitud_visita.fecha_creacion) <= 12";
             }
         }
+
+
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
