@@ -13,17 +13,21 @@ function obtenerSolicitudes($rango) {
         // Obtener el mes actual
         $mes_actual = date('n');
 
-        // Ajustar la consulta según el valor de la variable de rango
         $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
-        usuario.apellidoM, usuario.id_usuario, solicitud_visita.fecha, solicitud_visita.horaSalida, solicitud_visita.horaLlegada, solicitud_visita.estatus, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
+        usuario.apellidoM, usuario.id_usuario, solicitud_visita.fecha, solicitud_visita.fecha_creacion, solicitud_visita.horaSalida, solicitud_visita.horaLlegada, solicitud_visita.estatus, solicitud_visita.id_empresa, solicitud_visita.asignatura, solicitud_visita.objetivo, solicitud_visita.grupo, 
         solicitud_visita.semestre, solicitud_visita.num_alumnos, solicitud_visita.id_carrera, solicitud_visita.num_alumnas, solicitud_visita.comentarios, carrera.nombre_carrera 
         FROM solicitud_visita 
         INNER JOIN empresa ON solicitud_visita.id_empresa = empresa.id_empresa 
         INNER JOIN usuario ON solicitud_visita.id_usuario = usuario.id_usuario 
         INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera";
 
+        // Ajustar la consulta según el valor de la variable de rango
         if ($rango == 1) {
-            $sql .= " WHERE (MONTH(solicitud_visita.fecha) >= 1 AND MONTH(solicitud_visita.fecha) <= 7 AND YEAR(solicitud_visita.fecha) = YEAR(CURRENT_DATE)) OR (MONTH(solicitud_visita.fecha) >= 8 AND MONTH(solicitud_visita.fecha) <= 12 AND YEAR(solicitud_visita.fecha) = YEAR(CURRENT_DATE) - 1)";
+            if ($mes_actual >= 1 && $mes_actual <= 7) {
+                $sql .= " WHERE MONTH(solicitud_visita.fecha_creacion) >= 1 AND MONTH(solicitud_visita.fecha_creacion) <= 7";
+            } else {
+                $sql .= " WHERE MONTH(solicitud_visita.fecha_creacion) >= 8 AND MONTH(solicitud_visita.fecha_creacion) <= 12";
+            }
         }
 
         $stmt = $pdo->prepare($sql);
