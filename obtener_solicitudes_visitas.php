@@ -22,6 +22,7 @@ function obtenerSolicitudes($rango) {
         INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera";
 
         // Ajustar la consulta según el valor de la variable de rango
+        // Ajustar la consulta según el valor de la variable de rango
         if ($rango == 1) {
             if ($mes_actual >= 1 && $mes_actual <= 7) {
                 $sql .= " WHERE MONTH(solicitud_visita.fecha) >= 1 AND MONTH(solicitud_visita.fecha) <= 7";
@@ -29,6 +30,7 @@ function obtenerSolicitudes($rango) {
                 $sql .= " WHERE MONTH(solicitud_visita.fecha) >= 8 AND MONTH(solicitud_visita.fecha) <= 12";
             }
         }
+
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
