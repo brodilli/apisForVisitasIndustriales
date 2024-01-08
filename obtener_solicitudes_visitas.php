@@ -10,8 +10,8 @@ function obtenerSolicitudes($rango) {
     try {
         $pdo = conectarDb(); // Conexión a la base de datos usando PDO
 
-        // Obtener la fecha actual
-        $fecha_actual = date('Y-m-d');
+        // Obtener el mes actual
+        $mes_actual = date('n');
 
         // Ajustar la consulta según el valor de la variable de rango
         $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
@@ -23,14 +23,10 @@ function obtenerSolicitudes($rango) {
         INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera";
 
         if ($rango == 1) {
-            $sql .= " WHERE YEAR(solicitud_visita.fecha) = YEAR(:fecha) AND (MONTH(solicitud_visita.fecha) >= 1 AND MONTH(solicitud_visita.fecha) <= 6)";
+            $sql .= " WHERE (MONTH(solicitud_visita.fecha) >= 1 AND MONTH(solicitud_visita.fecha) <= 7 AND YEAR(solicitud_visita.fecha) = YEAR(CURRENT_DATE)) OR (MONTH(solicitud_visita.fecha) >= 8 AND MONTH(solicitud_visita.fecha) <= 12 AND YEAR(solicitud_visita.fecha) = YEAR(CURRENT_DATE) - 1)";
         }
 
         $stmt = $pdo->prepare($sql);
-
-        // Asignar valor a parámetro :fecha
-        $stmt->bindParam(':fecha', $fecha_actual, PDO::PARAM_STR);
-
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

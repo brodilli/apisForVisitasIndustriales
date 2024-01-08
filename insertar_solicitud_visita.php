@@ -13,6 +13,9 @@ $con = conectarDb();
 // Obtiene los datos en formato JSON
 $data = json_decode(file_get_contents("php://input"));
 
+// Obtiene la fecha actual
+$fecha_creacion = date('Y-m-d H:i:s');
+
 // Verifica que los campos necesarios estén presentes
 if (
     isset($data->id_usuario, $data->id_carrera, $data->id_empresa, $data->semestre, $data->grupo, $data->objetivo, $data->fecha, $data->horaSalida, $data->horaLlegada, $data->num_alumnos, $data->num_alumnas, $data->asignatura, $data->acompanante)
@@ -41,12 +44,12 @@ if (
 
         if ($totalSolicitudes <= 4) {
             // Preparar la consulta para insertar una nueva solicitud
-            $insertQuery = "INSERT INTO solicitud_visita (id_usuario, id_carrera, id_empresa, semestre, grupo, objetivo, fecha, horaSalida, horaLlegada, num_alumnos, num_alumnas, asignatura, acompanante) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertQuery = "INSERT INTO solicitud_visita (id_usuario, id_carrera, id_empresa, semestre, grupo, objetivo, fecha, horaSalida, horaLlegada, num_alumnos, num_alumnas, asignatura, acompanante, fecha_creacion) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $con->prepare($insertQuery);
 
             // Ejecutar la consulta de inserción
-            $success = $stmt->execute([$id_usuario, $id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $acompanante]);
+            $success = $stmt->execute([$id_usuario, $id_carrera, $id_empresa, $semestre, $grupo, $objetivo, $fecha, $horaSalida, $horaLlegada, $num_alumnos, $num_alumnas, $asignatura, $acompanante, $fecha_creacion]);
 
             if ($success) {
                 http_response_code(200);
