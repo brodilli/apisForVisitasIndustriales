@@ -11,6 +11,7 @@ function obtenerSolicitudes($rango) {
         $pdo = conectarDb();
 
         $mes_actual = date('n');
+        echo "Valor de \$mes_actual: " . $mes_actual . "<br>";
 
         // Consulta general sin filtro
         $sqlGeneral = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
@@ -58,10 +59,14 @@ function obtenerSolicitudes($rango) {
         echo json_encode(["error" => "Hubo un problema al procesar la solicitud."]);
         exit();
     }
+    
 }
 
 // Obtener el valor de la variable de rango desde datos POST
 $rango = isset($_POST['rango']) ? $_POST['rango'] : 2;
+echo "Consulta SQL General: " . $sqlGeneral . "<br>";
+echo "Consulta SQL Semestre: " . $sqlSemestre . "<br>";
+echo "Valor de \$rango: " . $rango . "<br>";
 
 $solicitudes = obtenerSolicitudes($rango);
 
