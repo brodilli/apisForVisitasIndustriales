@@ -10,8 +10,10 @@ function obtenerSolicitudes($rango) {
     try {
         $pdo = conectarDb();
 
+        // Imprimir el contenido de $_POST para depurar
+        var_dump($_POST);
+
         $mes_actual = date('n');
-        echo "Valor de \$mes_actual: " . $mes_actual . "<br>";
 
         // Consulta general sin filtro
         $sqlGeneral = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
@@ -42,9 +44,15 @@ function obtenerSolicitudes($rango) {
                 $sqlSemestre .= " MONTH(solicitud_visita.fecha_creacion) >= 8 AND MONTH(solicitud_visita.fecha_creacion) <= 12";
             }
 
+            // Imprimir la consulta con filtro de semestre para depurar
+            echo "Consulta SQL con filtro de semestre: " . $sqlSemestre . "<br>";
+
             // Ejecutar consulta con filtro de semestre
             $stmt = $pdo->prepare($sqlSemestre);
         } else {
+            // Imprimir la consulta general para depurar
+            echo "Consulta SQL general: " . $sqlGeneral . "<br>";
+
             // Ejecutar consulta general sin filtro
             $stmt = $pdo->prepare($sqlGeneral);
         }
@@ -59,12 +67,10 @@ function obtenerSolicitudes($rango) {
         echo json_encode(["error" => "Hubo un problema al procesar la solicitud."]);
         exit();
     }
-    
 }
 
 // Obtener el valor de la variable de rango desde datos POST
 $rango = isset($_POST['rango']) ? $_POST['rango'] : 2;
-echo "Valor de \$rango: " . $rango . "<br>";
 
 $solicitudes = obtenerSolicitudes($rango);
 
