@@ -47,7 +47,8 @@ function obtenerSolicitudes($rango) {
     }
 }
 
-$rango = isset($_GET['rango']) ? $_GET['rango'] : 2;
+// Obtener el valor de la variable de rango desde datos POST
+$rango = isset($_POST['rango']) ? $_POST['rango'] : 2;
 
 $solicitudes = obtenerSolicitudes($rango);
 
