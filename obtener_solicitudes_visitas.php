@@ -64,8 +64,6 @@ function obtenerSolicitudes($rango) {
 
 // Obtener el valor de la variable de rango desde datos POST
 $rango = isset($_POST['rango']) ? $_POST['rango'] : 2;
-echo "Consulta SQL General: " . $sqlGeneral . "<br>";
-echo "Consulta SQL Semestre: " . $sqlSemestre . "<br>";
 echo "Valor de \$rango: " . $rango . "<br>";
 
 $solicitudes = obtenerSolicitudes($rango);
