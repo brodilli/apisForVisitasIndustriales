@@ -4,13 +4,12 @@ ini_set('display_errors', 1);
 header('Access-Control-Allow-Origin: *');
 header("Content-Type: application/json; charset=utf-8");
 
-include "conectar.php"; // Asegúrate de incluir el archivo de conexión apropiado
+include "conectar.php";
 
 function obtenerSolicitudes($rango) {
     try {
-        $pdo = conectarDb(); // Conexión a la base de datos usando PDO
+        $pdo = conectarDb();
 
-        // Obtener el mes actual
         $mes_actual = date('n');
 
         $sql = "SELECT solicitud_visita.id_visita, empresa.nombre_empresa, empresa.lugar, usuario.nombres, usuario.apellidoP, 
@@ -21,9 +20,11 @@ function obtenerSolicitudes($rango) {
         INNER JOIN usuario ON solicitud_visita.id_usuario = usuario.id_usuario 
         INNER JOIN carrera ON solicitud_visita.id_carrera = carrera.id_carrera";
 
-        // Ajustar la consulta según el valor de la variable de rango
+        echo "Valor de \$rango: " . $rango . "<br>";
+        echo "Consulta SQL antes del if: " . $sql . "<br>";
+
         if ($rango == 1) {
-            $sql .= " WHERE"; // Agrega la cláusula WHERE si no está presente en la consulta
+            $sql .= " WHERE"; 
             if ($mes_actual >= 1 && $mes_actual <= 7) {
                 $sql .= " MONTH(solicitud_visita.fecha_creacion) >= 1 AND MONTH(solicitud_visita.fecha_creacion) <= 7";
             } else {
@@ -31,29 +32,24 @@ function obtenerSolicitudes($rango) {
             }
         }
 
-
+        echo "Consulta SQL después del if: " . $sql . "<br>";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Cerrar la conexión y devolver los resultados
         $pdo = null;
         return $result;
     } catch (PDOException $e) {
-        // Manejo de errores
-        http_response_code(500); // Error interno del servidor
+        http_response_code(500);
         echo json_encode(["error" => "Hubo un problema al procesar la solicitud."]);
         exit();
     }
 }
 
-// Obtener el valor de la variable de rango, si no se proporciona, establecer en 2 por defecto
 $rango = isset($_GET['rango']) ? $_GET['rango'] : 2;
 
-// Llamada a la función para obtener los datos
 $solicitudes = obtenerSolicitudes($rango);
 
-// Devolver los datos como JSON
 echo json_encode($solicitudes);
 ?>
